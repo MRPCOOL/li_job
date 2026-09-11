@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>李总人才网 - 靠谱求职招聘平台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        secondary: '#f97316',
+                        neutral: '#1f2937',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        .modal-bg.hidden {
+            display: none !important;
+        }
+
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .job-card-hover {
+                @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border border-gray-100;
+            }
+            .btn-primary {
+                @apply bg-primary text-white px-5 py-2 rounded-lg hover:bg-primary/90 transition;
+            }
+            .btn-secondary {
+                @apply bg-white text-primary border border-primary px-5 py-2 rounded-lg hover:bg-primary/5 transition;
+            }
+            .page-item {
+                @apply w-9 h-9 flex items-center justify-center rounded border border-gray-200 hover:border-primary hover:text-primary cursor-pointer transition;
+            }
+            .page-active {
+                @apply bg-primary text-white border-primary;
+            }
+            .filter-tag {
+                @apply inline-block px-3 py-1 mr-2 mb-2 border rounded text-sm cursor-pointer hover:border-primary hover:text-primary transition;
+            }
+            .filter-tag-active {
+                @apply border-primary bg-primary/5 text-primary;
+            }
+            .tag-pill {
+                @apply bg-primary/10 text-primary px-3 py-1 rounded-full text-sm inline-flex items-center gap-1 mr-2;
+            }
+            .modal-bg {
+                @apply fixed inset-0 bg-black/50 z-[90] flex items-center justify-center p-4;
+            }
+            .modal-box {
+                @apply bg-white rounded-xl w-full max-w-2xl max-h-[85vh] overflow-y-auto;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-700">
+    <!-- 顶部导航 -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <i class="fa fa-briefcase text-primary text-2xl"></i>
+                <span class="text-xl font-bold text-neutral">李总人才网</span>
+            </div>
+            <nav class="hidden md:flex items-center gap-7 text-sm">
+                <a href="#" class="text-primary font-medium">首页</a>
+                <a href="#">找工作</a>
+                <a href="#">招人才</a>
+                <a href="#">招聘会</a>
+                <a href="#">职场资讯</a>
+                <a href="#">帮助中心</a>
+            </nav>
+            <div class="flex items-center gap-3">
+                <button class="btn-secondary text-sm login-coming-soon">企业登录</button>
+                <button class="btn-primary text-sm login-coming-soon">个人登录</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Banner搜索区 -->
+    <section class="bg-gradient-to-r from-blue-600 to-blue-500 py-14">
+        <div class="container mx-auto px-4">
+            <div class="max-w-3xl mx-auto text-center mb-8">
+                <h2 class="text-[clamp(1.8rem,4vw,2.8rem)] text-white font-bold mb-3">找好工作，上优聘</h2>
+                <p class="text-blue-100">汇聚3200+企业真实岗位，百万求职者的求职选择</p>
+            </div>
+            <div class="bg-white rounded-xl p-4 shadow-md max-w-3xl mx-auto">
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <input id="searchKeyword" type="text" placeholder="岗位名称 / 公司 / 关键词"
+                        class="flex-1 border border-gray-200 rounded-lg px-4 py-3 outline-none focus:border-primary">
+                    <select id="searchProvince"
+                        class="border border-gray-200 rounded-lg px-4 py-3 outline-none focus:border-primary">
+                        <option value="全部省份">全部省份</option>
+                    </select>
+                    <select id="searchCity"
+                        class="border border-gray-200 rounded-lg px-4 py-3 outline-none focus:border-primary">
+                        <option value="全部城市">全部城市</option>
+                    </select>
+                    <button id="searchButton" class="btn-primary py-3">
+                        <i class="fa fa-search mr-1"></i>搜索岗位
+                    </button>
+                </div>
+                <div class="mt-3 flex flex-wrap gap-2 text-sm">
+                    <span class="text-gray-500">热门：</span>
+                    <a href="#" class="text-primary hot-keyword" data-keyword="Java开发">Java开发</a>
+                    <a href="#" class="text-primary hot-keyword" data-keyword="运营">运营</a>
+                    <a href="#" class="text-primary hot-keyword" data-keyword="行政人事">行政人事</a>
+                    <a href="#" class="text-primary hot-keyword" data-keyword="会计">会计</a>
+                    <a href="#" class="text-primary hot-keyword" data-keyword="销售">销售</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <main class="container mx-auto px-4 py-10">
+        <!-- ✅ 已选筛选标签栏 -->
+        <div id="selectedTagsWrap" class="mb-6 hidden">
+            <div class="bg-white p-4 rounded-lg shadow-sm flex flex-wrap items-center">
+                <span class="text-gray-500 mr-3 text-sm">已选条件：</span>
+                <div id="selectedTags"></div>
+                <button id="clearAllTags" class="text-sm text-gray-400 hover:text-primary ml-auto">清空全部</button>
+            </div>
+        </div>
+
+        <!-- 热门企业 -->
+        <section class="mb-12">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-neutral">热门在招企业</h3>
+                <a href="#" class="text-primary text-sm">查看更多 <i class="fa fa-angle-right"></i></a>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                <div class="bg-white rounded-lg p-4 flex flex-col items-center job-card-hover">
+                    <div
+                        class="w-12 h-12 rounded bg-blue-100 flex items-center justify-center text-primary font-bold mb-2">
+                        恒信</div>
+                    <p class="font-medium text-sm">恒信科技有限公司</p>
+                    <p class="text-xs text-gray-400">在招28个岗位</p>
+                </div>
+                <div class="bg-white rounded-lg p-4 flex flex-col items-center job-card-hover">
+                    <div
+                        class="w-12 h-12 rounded bg-orange-100 flex items-center justify-center text-secondary font-bold mb-2">
+                        联达</div>
+                    <p class="font-medium text-sm">联达商贸集团</p>
+                    <p class="text-xs text-gray-400">在招16个岗位</p>
+                </div>
+                <div class="bg-white rounded-lg p-4 flex flex-col items-center job-card-hover">
+                    <div
+                        class="w-12 h-12 rounded bg-green-100 flex items-center justify-center text-green-600 font-bold mb-2">
+                        云途</div>
+                    <p class="font-medium text-sm">云途数字技术</p>
+                    <p class="text-xs text-gray-400">在招35个岗位</p>
+                </div>
+                <div class="bg-white rounded-lg p-4 flex flex-col items-center job-card-hover">
+                    <div
+                        class="w-12 h-12 rounded bg-purple-100 flex items-center justify-center text-purple-600 font-bold mb-2">
+                        锐思</div>
+                    <p class="font-medium text-sm">锐思文化传媒</p>
+                    <p class="text-xs text-gray-400">在招12个岗位</p>
+                </div>
+                <div class="bg-white rounded-lg p-4 flex flex-col items-center job-card-hover">
+                    <div
+                        class="w-12 h-12 rounded bg-red-100 flex items-center justify-center text-red-500 font-bold mb-2">
+                        启元</div>
+                    <p class="font-medium text-sm">启元医药</p>
+                    <p class="text-xs text-gray-400">在招21个岗位</p>
+                </div>
+                <div class="bg-white rounded-lg p-4 flex flex-col items-center job-card-hover">
+                    <div
+                        class="w-12 h-12 rounded bg-cyan-100 flex items-center justify-center text-cyan-600 font-bold mb-2">
+                        博远</div>
+                    <p class="font-medium text-sm">博远工程建设</p>
+                    <p class="text-xs text-gray-400">在招9个岗位</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 岗位区域：左侧筛选栏 + 右侧岗位列表 -->
+        <section class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <!-- 左侧筛选面板 -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-xl p-5 sticky top-24 shadow-sm">
+                    <div class="flex justify-between items-center mb-4">
+                        <h4 class="font-bold text-neutral">职位筛选</h4>
+                        <button id="resetFilter" class="text-sm text-gray-400 hover:text-primary">重置</button>
+                    </div>
+
+                    <!-- 薪资筛选 -->
+                    <div class="mb-6 filter-group" data-type="salary">
+                        <p class="font-medium text-sm mb-3">薪资范围</p>
+                        <div>
+                            <span class="filter-tag filter-tag-active" data-val="不限">不限</span>
+                            <span class="filter-tag" data-val="5k以下">5k以下</span>
+                            <span class="filter-tag" data-val="5k-8k">5k-8k</span>
+                            <span class="filter-tag" data-val="8k-12k">8k-12k</span>
+                            <span class="filter-tag" data-val="12k-20k">12k-20k</span>
+                            <span class="filter-tag" data-val="20k以上">20k以上</span>
+                        </div>
+                    </div>
+
+                    <!-- 工作经验 -->
+                    <div class="mb-6 filter-group" data-type="exp">
+                        <p class="font-medium text-sm mb-3">工作经验</p>
+                        <div>
+                            <span class="filter-tag filter-tag-active" data-val="不限">不限</span>
+                            <span class="filter-tag" data-val="应届生">应届生</span>
+                            <span class="filter-tag" data-val="1年以内">1年以内</span>
+                            <span class="filter-tag" data-val="1-3年">1-3年</span>
+                            <span class="filter-tag" data-val="3-5年">3-5年</span>
+                            <span class="filter-tag" data-val="5年以上">5年以上</span>
+                        </div>
+                    </div>
+
+                    <!-- 学历 -->
+                    <div class="mb-6 filter-group" data-type="edu">
+                        <p class="font-medium text-sm mb-3">学历要求</p>
+                        <div>
+                            <span class="filter-tag filter-tag-active" data-val="不限">不限</span>
+                            <span class="filter-tag" data-val="大专">大专</span>
+                            <span class="filter-tag" data-val="本科">本科</span>
+                            <span class="filter-tag" data-val="硕士">硕士</span>
+                        </div>
+                    </div>
+
+                    <button id="applyFilters" class="btn-primary w-full mt-4">确认筛选</button>
+                </div>
+            </div>
+
+            <!-- 右侧岗位列表 -->
+            <div class="lg:col-span-3">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-neutral">最新招聘岗位</h3>
+                    <div class="flex gap-3 text-sm">
+                        <a href="#" class="text-primary sort-link" data-sort="latest">最新发布</a>
+                        <a href="#" class="sort-link" data-sort="salary">薪资优先</a>
+                        <a href="#" class="sort-link" data-sort="popular">热门岗位</a>
+                    </div>
+                </div>
+
+                <!-- 岗位卡片列表 -->
+                <div class="grid md:grid-cols-2 gap-5 mb-8" id="jobList">
+                    <!-- 岗位1 -->
+                    <div class="bg-white rounded-xl p-5 job-card-hover job-item" data-id="1">
+                        <div class="flex justify-between mb-2">
+                            <h4 class="font-semibold text-lg">后端开发工程师</h4>
+                            <span class="text-secondary font-bold">12k-18k</span>
+                        </div>
+                        <p class="text-gray-500 text-sm mb-2">恒信科技有限公司</p>
+                        <div class="flex gap-2 mb-3 flex-wrap">
+                            <span class="bg-gray-100 text-xs px-2 py-1 rounded">南昌</span>
+                            <span class="bg-gray-100 text-xs px-2 py-1 rounded">3年经验</span>
+                            <span class="bg-gray-100 text-xs px-2 py-1 rounded">本科</span>
+                        </div>
+                        <p class="text-gray-400 text-sm line-clamp-2">
+                            负责后端接口开发、数据库优化，参与系统架构迭代，有SpringBoot项目经验优先。五险一金，年终奖14薪。</p>
+                        <div class="mt-4 flex justify-between items-center">
+                            <span class="text-xs text-gray-400">2天前发布</span>
+                            <button class="text-primary text-sm open-detail">立即投递</button>
+                        </div>
+                    </div>
+                    <!-- 岗位2 -->
+                    <div class="bg-white rounded-xl p-5 job-card-hover job-item" data-id="2">
+                        <div class="flex justify-between mb-2">
+                            <h4 class="font-semibold text-lg">电商运营专员</h4>
+                            <span class="text-secondary font-bold">6k-9k</span>
+                        </div>
+                        <p class="text-gray-500 text-sm mb-2">联达商贸集团</p>
+                        <div class="flex gap-2 mb-3 flex-wrap">
+                            <span class="bg-gray-100 text-xs px-2 py-1 rounded">南昌</span>
+                            <span class="bg-gray-100 text-xs px-2 py-1 rounded">1年经验</span>
+                            <span class="bg-gray-100 text-xs px-2 py-1 rounded">大专</span>
+                        </div>
+                        <p class="text-gray-400 text-sm line-clamp-2">负责店铺日常运营、活动策划，数据复盘，商品上下架，熟悉抖音/淘宝平台规则，有无经验可培训。</p>
+                        <div class="mt-4 flex justify-between items-center">
+                            <span class="text-xs text-gray-400">3天前发布</span>
+                            <button class="text-primary text-sm open-detail">立即投递</button>
+                        </div>
+                    </div>
+                    <!-- 岗位3 -->
+                    <div class="bg-white rounded-xl p-5 job-card-hover job-item" data-id="3">
+                        <div class="flex justify-between mb-2">
+                            <h4 class="font-semibold text-lg">UI设计师</h4>
+                            <span class="text-secondary font-bold">8k-13k</span>
+                        </div>
+                        <p class="text-gray-500 text-sm mb-2">云途数字技术</p>
+                        <div class="flex gap-2 mb-3 flex-wrap">
+                            <span class="bg-gray-100 text-xs px-2 py-1 rounded">南昌</span>
+                            <span class="bg-gray-100 text-xs px-2 py-1 rounded">2年经验</span>
+                            <span class="bg-gray-100 text-xs px-2 py-1 rounded">本科</span>
+                        </div>
+                        <p class="text-gray-400 text-sm line-clamp-2">负责APP、网页界面设计，输出视觉稿，和产品、开发对接，熟练使用Figma、PS，作品集优先。
+                        </p>
+                        <div class="mt-4 flex justify-between items-center">
+                            <span class="text-xs text-gray-400">1天前发布</span>
+                            <button class="text-primary text-sm open-detail">立即投递</button>
+                        </div>
+                    </div>
+                    <!-- 岗位4 -->
+                    <div class="bg-white rounded-xl p-5 job-card-hover job-item" data-id="4">
+                        <div class="flex justify-between mb-2">
+                            <h4 class="font-semibold text-lg">新媒体编导</h4>
+                            <span class="text-secondary font-bold">7k-11k</span>
+                        </div>
+                        <p class="text-gray-500 text-sm mb-2">锐思文化传媒</p>
+                        <div class="flex gap-2 mb-3 flex-wrap">
+                            <span class="bg-gray-100 text-xs px-2 py-1 rounded">南昌</span>
+                            <span class="bg-gray-100 text-xs px-2 py-1 rounded">1-2年</span>
+                            <span class="bg-gray-100 text-xs px-2 py-1 rounded">大专</span>
+                        </div>
+                        <p class="text-gray-400 text-sm line-clamp-2">短视频脚本策划、拍摄统筹，账号内容策划，熟悉短视频流量逻辑，有成功案例优先。</p>
+                        <div class="mt-4 flex justify-between items-center">
+                            <span class="text-xs text-gray-400">4天前发布</span>
+                            <button class="text-primary text-sm open-detail">立即投递</button>
+                        </div>
+                    </div>
+                    <!-- 岗位5 -->
+                    <div class="bg-white rounded-xl p-5 job-card-hover job-item" data-id="5">
+                        <div class="flex justify-between mb-2">
+                            <h4 class="font-semibold text-lg">人事行政主管</h4>
+                            <span class="text-secondary font-bold">7k-10k</span>
+                        </div>
+                        <p class="text-gray-500 text-sm mb-2">启元医药</p>
+                        <div class="flex gap-2 mb-3 flex-wrap">
+                            <span class="bg-gray-100 text-xs px-2 py-1 rounded">南昌</span>
+                            <span class="bg-gray-100 text-xs px-2 py-1 rounded">3年</span>
+                            <span class="bg-gray-100 text-xs px-2 py-1 rounded">本科</span>
+                        </div>
+                        <p class="text-gray-400 text-sm line-clamp-2">统筹招聘、员工关系、行政后勤，制度搭建，熟悉劳动法规，人事全盘工作经验。</p>
+                        <div class="mt-4 flex justify-between items-center">
+                            <span class="text-xs text-gray-400">1天前发布</span>
+                            <button class="text-primary text-sm open-detail">立即投递</button>
+                        </div>
+                    </div>
+                    <!-- 岗位6 -->
+                    <div class="bg-white rounded-xl p-5 job-card-hover job-item" data-id="6">
+                        <div class="flex justify-between mb-2">
+                            <h4 class="font-semibold text-lg">造价工程师</h4>
+                            <span class="text-secondary font-bold">10k-15k</span>
+                        </div>
+                        <p class="text-gray-500 text-sm mb-2">博远工程建设</p>
+                        <div class="flex gap-2 mb-3 flex-wrap">
+                            <span class="bg-gray-100 text-xs px-2 py-1 rounded">南昌</span>
+                            <span class="bg-gray-100 text-xs px-2 py-1 rounded">4年</span>
+                            <span class="bg-gray-100 text-xs px-2 py-1 rounded">本科</span>
+                        </div>
+                        <p class="text-gray-400 text-sm line-clamp-2">工程量核算、预算编制，竣工结算，熟悉广联达软件，持证优先，项目奖金丰厚。</p>
+                        <div class="mt-4 flex justify-between items-center">
+                            <span class="text-xs text-gray-400">5天前发布</span>
+                            <button class="text-primary text-sm open-detail">立即投递</button>
+                        </div>
+                    </div>
+                    <!-- 岗位7-14 -->
+                    <div class="bg-white rounded-xl p-5 job-card-hover job-item" data-id="7">
+                        <div class="flex justify-between mb-2">
+                            <h4 class="font-semibold text-lg">Java开发工程师</h4><span
+                                class="text-secondary font-bold">15k-22k</span>
+                        </div>
+                        <p class="text-gray-500 text-sm mb-2">星河软件有限公司</p>
+                        <div class="flex gap-2 mb-3 flex-wrap"><span
+                                class="bg-gray-100 text-xs px-2 py-1 rounded">上海</span><span
+                                class="bg-gray-100 text-xs px-2 py-1 rounded">3-5年</span><span
+                                class="bg-gray-100 text-xs px-2 py-1 rounded">本科</span></div>
+                        <p class="text-gray-400 text-sm line-clamp-2">负责核心业务系统开发和接口维护，参与微服务架构设计，熟悉Spring Cloud。</p>
+                        <div class="mt-4 flex justify-between items-center"><span
+                                class="text-xs text-gray-400">今天发布</span><button
+                                class="text-primary text-sm open-detail">立即投递</button></div>
+                    </div>
+                    <div class="bg-white rounded-xl p-5 job-card-hover job-item" data-id="8">
+                        <div class="flex justify-between mb-2">
+                            <h4 class="font-semibold text-lg">招商主管</h4><span
+                                class="text-secondary font-bold">8k-12k</span>
+                        </div>
+                        <p class="text-gray-500 text-sm mb-2">联城商业管理有限公司</p>
+                        <div class="flex gap-2 mb-3 flex-wrap"><span
+                                class="bg-gray-100 text-xs px-2 py-1 rounded">杭州</span><span
+                                class="bg-gray-100 text-xs px-2 py-1 rounded">1-3年</span><span
+                                class="bg-gray-100 text-xs px-2 py-1 rounded">大专</span></div>
+                        <p class="text-gray-400 text-sm line-clamp-2">负责商户拓展和客户维护，完成招商目标，具备良好的沟通谈判能力。</p>
+                        <div class="mt-4 flex justify-between items-center"><span
+                                class="text-xs text-gray-400">今天发布</span><button
+                                class="text-primary text-sm open-detail">立即投递</button></div>
+                    </div>
+                    <div class="bg-white rounded-xl p-5 job-card-hover job-item" data-id="9">
+                        <div class="flex justify-between mb-2">
+                            <h4 class="font-semibold text-lg">短视频运营</h4><span
+                                class="text-secondary font-bold">6k-10k</span>
+                        </div>
+                        <p class="text-gray-500 text-sm mb-2">视界文化传媒</p>
+                        <div class="flex gap-2 mb-3 flex-wrap"><span
+                                class="bg-gray-100 text-xs px-2 py-1 rounded">深圳</span><span
+                                class="bg-gray-100 text-xs px-2 py-1 rounded">1年以内</span><span
+                                class="bg-gray-100 text-xs px-2 py-1 rounded">大专</span></div>
+                        <p class="text-gray-400 text-sm line-clamp-2">负责短视频账号运营、内容策划和数据分析，熟悉抖音平台规则。</p>
+                        <div class="mt-4 flex justify-between items-center"><span
+                                class="text-xs text-gray-400">1天前发布</span><button
+                                class="text-primary text-sm open-detail">立即投递</button></div>
+                    </div>
+                    <div class="bg-white rounded-xl p-5 job-card-hover job-item" data-id="10">
+                        <div class="flex justify-between mb-2">
+                            <h4 class="font-semibold text-lg">财务会计</h4><span
+                                class="text-secondary font-bold">5k-8k</span>
+                        </div>
+                        <p class="text-gray-500 text-sm mb-2">嘉禾实业集团</p>
+                        <div class="flex gap-2 mb-3 flex-wrap"><span
+                                class="bg-gray-100 text-xs px-2 py-1 rounded">南昌</span><span
+                                class="bg-gray-100 text-xs px-2 py-1 rounded">1-3年</span><span
+                                class="bg-gray-100 text-xs px-2 py-1 rounded">本科</span></div>
+                        <p class="text-gray-400 text-sm line-clamp-2">负责日常账务处理、报表编制和税务申报，持有初级会计证书优先。</p>
+                        <div class="mt-4 flex justify-between items-center"><span
+                                class="text-xs text-gray-400">2天前发布</span><button
+                                class="text-primary text-sm open-detail">立即投递</button></div>
+                    </div>
+                    <div class="bg-white rounded-xl p-5 job-card-hover job-item" data-id="11">
+                        <div class="flex justify-between mb-2">
+                            <h4 class="font-semibold text-lg">前端开发工程师</h4><span
+                                class="text-secondary font-bold">10k-16k</span>
+                        </div>
+                        <p class="text-gray-500 text-sm mb-2">智联数字科技</p>
+                        <div class="flex gap-2 mb-3 flex-wrap"><span
+                                class="bg-gray-100 text-xs px-2 py-1 rounded">北京</span><span
+                                class="bg-gray-100 text-xs px-2 py-1 rounded">3-5年</span><span
+                                class="bg-gray-100 text-xs px-2 py-1 rounded">本科</span></div>
+                        <p class="text-gray-400 text-sm line-clamp-2">负责Web应用开发和性能优化，熟练使用Vue或React，有大型项目经验。</p>
+                        <div class="mt-4 flex justify-between items-center"><span
+                                class="text-xs text-gray-400">2天前发布</span><button
+                                class="text-primary text-sm open-detail">立即投递</button></div>
+                    </div>
+                    <div class="bg-white rounded-xl p-5 job-card-hover job-item" data-id="12">
+                        <div class="flex justify-between mb-2">
+                            <h4 class="font-semibold text-lg">人力资源专员</h4><span
+                                class="text-secondary font-bold">5k-7k</span>
+                        </div>
+                        <p class="text-gray-500 text-sm mb-2">远景供应链有限公司</p>
+                        <div class="flex gap-2 mb-3 flex-wrap"><span
+                                class="bg-gray-100 text-xs px-2 py-1 rounded">杭州</span><span
+                                class="bg-gray-100 text-xs px-2 py-1 rounded">1年以内</span><span
+                                class="bg-gray-100 text-xs px-2 py-1 rounded">大专</span></div>
+                        <p class="text-gray-400 text-sm line-clamp-2">协助招聘、培训和员工档案管理，负责入离职手续办理及员工关系维护。</p>
+                        <div class="mt-4 flex justify-between items-center"><span
+                                class="text-xs text-gray-400">3天前发布</span><button
+                                class="text-primary text-sm open-detail">立即投递</button></div>
+                    </div>
+                    <div class="bg-white rounded-xl p-5 job-card-hover job-item" data-id="13">
+                        <div class="flex justify-between mb-2">
+                            <h4 class="font-semibold text-lg">产品经理</h4><span
+                                class="text-secondary font-bold">12k-18k</span>
+                        </div>
+                        <p class="text-gray-500 text-sm mb-2">云启信息技术</p>
+                        <div class="flex gap-2 mb-3 flex-wrap"><span
+                                class="bg-gray-100 text-xs px-2 py-1 rounded">上海</span><span
+                                class="bg-gray-100 text-xs px-2 py-1 rounded">3-5年</span><span
+                                class="bg-gray-100 text-xs px-2 py-1 rounded">本科</span></div>
+                        <p class="text-gray-400 text-sm line-clamp-2">负责产品规划、需求分析和项目推进，协调设计与研发团队完成产品迭代。</p>
+                        <div class="mt-4 flex justify-between items-center"><span
+                                class="text-xs text-gray-400">4天前发布</span><button
+                                class="text-primary text-sm open-detail">立即投递</button></div>
+                    </div>
+                    <div class="bg-white rounded-xl p-5 job-card-hover job-item" data-id="14">
+                        <div class="flex justify-between mb-2">
+                            <h4 class="font-semibold text-lg">平面设计师</h4><span
+                                class="text-secondary font-bold">7k-11k</span>
+                        </div>
+                        <p class="text-gray-500 text-sm mb-2">橙意品牌设计</p>
+                        <div class="flex gap-2 mb-3 flex-wrap"><span
+                                class="bg-gray-100 text-xs px-2 py-1 rounded">深圳</span><span
+                                class="bg-gray-100 text-xs px-2 py-1 rounded">1-3年</span><span
+                                class="bg-gray-100 text-xs px-2 py-1 rounded">本科</span></div>
+                        <p class="text-gray-400 text-sm line-clamp-2">负责品牌视觉、宣传物料和活动页面设计，熟练使用Photoshop和Illustrator。</p>
+                        <div class="mt-4 flex justify-between items-center"><span
+                                class="text-xs text-gray-400">5天前发布</span><button
+                                class="text-primary text-sm open-detail">立即投递</button></div>
+                    </div>
+                </div>
+
+                <!-- 分页组件 -->
+                <div id="pagination" class="flex justify-center items-center gap-2 flex-wrap">
+                    <div class="page-item" data-page="prev">
+                        <i class="fa fa-angle-left"></i>
+                    </div>
+                    <div id="pageNumbers" class="flex items-center gap-2"></div>
+                    <div class="page-item" data-page="next">
+                        <i class="fa fa-angle-right"></i>
+                    </div>
+                    <div id="totalJobs" class="ml-4 text-sm text-gray-500">共14条岗位</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 底部 -->
+    <footer class="bg-neutral text-white py-10 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <i class="fa fa-briefcase text-primary text-2xl"></i>
+                        <span class="text-xl font-bold">李总人才网</span>
+                    </div>
+                    <p class="text-gray-400 text-sm">优聘人才，专注本地求职招聘服务，连接企业与人才，助力高效就业。</p>
+                </div>
+                <div>
+                    <h5 class="font-medium mb-4">求职者</h5>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="#">搜索职位</a></li>
+                        <li><a href="#">简历管理</a></li>
+                        <li><a href="#">求职指南</a></li>
+                        <li><a href="#">防骗提醒</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-medium mb-4">企业服务</h5>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="#">企业入驻</a></li>
+                        <li><a href="#">发布岗位</a></li>
+                        <li><a href="#">人才搜索</a></li>
+                        <li><a href="#">收费套餐</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-medium mb-4">联系我们</h5>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><i class="fa fa-phone mr-2"></i>0791-88XXXXXX</li>
+                        <li><i class="fa fa-envelope mr-2"></i>contact@youpin-job.com</li>
+                        <li><i class="fa fa-map-marker mr-2"></i>南昌市红谷滩新区</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-500 text-sm">
+                © 2026 江西慧点奇丰科技有限公司 版权所有 | 赣ICP备XXXXXXXX号
+                <span class="mx-2">|</span>
+                <a href="#">隐私政策</a>
+                <span class="mx-2">|</span>
+                <a href="#">用户协议</a>
+                <span class="mx-2">|</span>
+                <a href="#">免责声明</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ========= 岗位详情弹窗 ========= -->
+    <div id="jobDetailModal" class="modal-bg hidden">
+        <div class="modal-box p-6">
+            <div class="flex justify-between items-center border-b pb-4 mb-4">
+                <div>
+                    <h2 class="text-xl font-bold text-neutral" id="modalJobTitle">后端开发工程师</h2>
+                    <p class="text-secondary font-bold text-lg" id="modalJobSalary">12k-18k</p>
+                </div>
+                <button class="close-modal text-gray-400 text-xl"><i class="fa fa-times"></i></button>
+            </div>
+            <div class="space-y-4">
+                <div class="flex gap-3 flex-wrap">
+                    <span class="bg-gray-100 px-3 py-1 rounded text-sm" id="modalCity">南昌</span>
+                    <span class="bg-gray-100 px-3 py-1 rounded text-sm" id="modalExp">3年经验</span>
+                    <span class="bg-gray-100 px-3 py-1 rounded text-sm" id="modalEdu">本科</span>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-2">公司信息</h4>
+                    <p id="modalCompany" class="text-gray-600">恒信科技有限公司</p>
+                    <p class="text-gray-500 text-sm mt-1">互联网 | 50-100人 | 民营</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-2">岗位职责</h4>
+                    <p class="text-gray-600 text-sm leading-relaxed">
+                        1、负责后端业务接口开发、维护，数据库设计与优化；<br />
+                        2、参与产品需求评审，编写接口文档；<br />
+                        3、排查线上故障，保障服务稳定运行；<br />
+                        4、持续优化系统性能，推动技术迭代。
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-2">任职要求</h4>
+                    <p class="text-gray-600 text-sm leading-relaxed">
+                        1、本科及以上学历，计算机相关专业；<br />
+                        2、3年及以上Java后端开发经验，熟悉SpringBoot；<br />
+                        3、熟悉MySQL、Redis，了解微服务优先；<br />
+                        4、具备良好的沟通能力和团队协作。
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-2">福利待遇</h4>
+                    <p class="text-gray-600 text-sm">五险一金、年终奖14薪、带薪年假、节日福利、下午茶、弹性打卡</p>
+                </div>
+            </div>
+            <div class="mt-6 pt-4 border-t flex justify-end">
+                <button class="btn-primary open-apply-modal">投递简历</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========= 简历投递弹窗 ========= -->
+    <div id="applyModal" class="modal-bg hidden">
+        <div class="modal-box p-6 max-w-lg">
+            <div class="flex justify-between items-center border-b pb-4 mb-4">
+                <h2 class="text-xl font-bold text-neutral">投递简历</h2>
+                <button class="close-apply-modal text-gray-400 text-xl"><i class="fa fa-times"></i></button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">选择简历</label>
+                    <select class="w-full border border-gray-200 rounded-lg p-2">
+                        <option>我的简历（最新版本）</option>
+                        <option>简历_2026_完整版</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">自我介绍（选填）</label>
+                    <textarea rows="4" class="w-full border border-gray-200 rounded-lg p-2"
+                        placeholder="简单介绍自己，增加面试机会"></textarea>
+                </div>
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" id="agree">
+                    <label for="agree" class="text-sm text-gray-600">同意《简历投递协议》，允许企业查看我的简历</label>
+                </div>
+            </div>
+            <div class="mt-6 flex justify-end gap-3">
+                <button class="btn-secondary close-apply-modal">取消</button>
+                <button class="btn-primary confirm-apply">确认投递</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        const chinaCities = {
+            "北京市": ["北京"],
+            "天津市": ["天津"],
+            "上海市": ["上海"],
+            "重庆市": ["重庆"],
+            "河北省": ["石家庄", "唐山", "秦皇岛", "邯郸", "邢台", "保定", "张家口", "承德", "沧州", "廊坊", "衡水"],
+            "山西省": ["太原", "大同", "阳泉", "长治", "晋城", "朔州", "晋中", "运城", "忻州", "临汾", "吕梁"],
+            "辽宁省": ["沈阳", "大连", "鞍山", "抚顺", "本溪", "丹东", "锦州", "营口", "阜新", "辽阳", "盘锦", "铁岭", "朝阳", "葫芦岛"],
+            "吉林省": ["长春", "吉林", "四平", "辽源", "通化", "白山", "松原", "白城"],
+            "黑龙江省": ["哈尔滨", "齐齐哈尔", "鸡西", "鹤岗", "双鸭山", "大庆", "伊春", "佳木斯", "七台河", "牡丹江", "黑河", "绥化"],
+            "江苏省": ["南京", "无锡", "徐州", "常州", "苏州", "南通", "连云港", "淮安", "盐城", "扬州", "镇江", "泰州", "宿迁"],
+            "浙江省": ["杭州", "宁波", "温州", "嘉兴", "湖州", "绍兴", "金华", "衢州", "舟山", "台州", "丽水"],
+            "安徽省": ["合肥", "芜湖", "蚌埠", "淮南", "马鞍山", "淮北", "铜陵", "安庆", "黄山", "滁州", "阜阳", "宿州", "六安", "亳州", "池州", "宣城"],
+            "福建省": ["福州", "厦门", "莆田", "三明", "泉州", "漳州", "南平", "龙岩", "宁德"],
+            "江西省": ["南昌", "景德镇", "萍乡", "九江", "新余", "鹰潭", "赣州", "吉安", "宜春", "抚州", "上饶"],
+            "山东省": ["济南", "青岛", "淄博", "枣庄", "东营", "烟台", "潍坊", "济宁", "泰安", "威海", "日照", "临沂", "德州", "聊城", "滨州", "菏泽"],
+            "河南省": ["郑州", "开封", "洛阳", "平顶山", "安阳", "鹤壁", "新乡", "焦作", "濮阳", "许昌", "漯河", "三门峡", "南阳", "商丘", "信阳", "周口", "驻马店"],
+            "湖北省": ["武汉", "黄石", "十堰", "宜昌", "襄阳", "鄂州", "荆门", "孝感", "荆州", "黄冈", "咸宁", "随州"],
+            "湖南省": ["长沙", "株洲", "湘潭", "衡阳", "邵阳", "岳阳", "常德", "张家界", "益阳", "郴州", "永州", "怀化", "娄底"],
+            "广东省": ["广州", "深圳", "珠海", "汕头", "佛山", "韶关", "湛江", "肇庆", "江门", "茂名", "惠州", "梅州", "汕尾", "河源", "阳江", "清远", "东莞", "中山", "潮州", "揭阳", "云浮"],
+            "广西壮族自治区": ["南宁", "柳州", "桂林", "梧州", "北海", "防城港", "钦州", "贵港", "玉林", "百色", "贺州", "河池", "来宾", "崇左"],
+            "海南省": ["海口", "三亚", "三沙", "儋州"],
+            "四川省": ["成都", "自贡", "攀枝花", "泸州", "德阳", "绵阳", "广元", "遂宁", "内江", "乐山", "南充", "眉山", "宜宾", "广安", "达州", "雅安", "巴中", "资阳"],
+            "贵州省": ["贵阳", "六盘水", "遵义", "安顺", "毕节", "铜仁"],
+            "云南省": ["昆明", "曲靖", "玉溪", "保山", "昭通", "丽江", "普洱", "临沧"],
+            "西藏自治区": ["拉萨", "日喀则", "昌都", "林芝", "山南", "那曲"],
+            "陕西省": ["西安", "铜川", "宝鸡", "咸阳", "渭南", "延安", "汉中", "榆林", "安康", "商洛"],
+            "甘肃省": ["兰州", "嘉峪关", "金昌", "白银", "天水", "武威", "张掖", "平凉", "酒泉", "庆阳", "定西", "陇南"],
+            "青海省": ["西宁", "海东"],
+            "宁夏回族自治区": ["银川", "石嘴山", "吴忠", "固原", "中卫"],
+            "新疆维吾尔自治区": ["乌鲁木齐", "克拉玛依", "吐鲁番", "哈密", "昌吉", "博乐", "库尔勒", "阿克苏", "阿图什", "喀什", "和田"],
+            "内蒙古自治区": ["呼和浩特", "包头", "乌海", "赤峰", "通辽", "鄂尔多斯", "呼伦贝尔", "巴彦淖尔", "乌兰察布"],
+            "香港特别行政区": ["香港"],
+            "澳门特别行政区": ["澳门"],
+            "台湾省": ["台北", "新北", "桃园", "台中", "台南", "高雄"]
+        };
+        const cityToProvince = Object.entries(chinaCities).reduce((result, [province, cities]) => {
+            cities.forEach(city => { result[city] = province; });
+            return result;
+        }, {});
+        const searchProvince = document.getElementById('searchProvince');
+        const searchCity = document.getElementById('searchCity');
+
+        Object.keys(chinaCities).forEach(province => {
+            searchProvince.add(new Option(province, province));
+        });
+
+        function updateCityOptions() {
+            const province = searchProvince.value;
+            const cities = province === '全部省份' ? Object.values(chinaCities).flat() : chinaCities[province];
+            searchCity.innerHTML = '<option value="全部城市">全部城市</option>';
+            cities.forEach(city => searchCity.add(new Option(city, city)));
+        }
+
+        searchProvince.addEventListener('change', () => {
+            updateCityOptions();
+            currentPage = 1;
+            renderJobs();
+        });
+        searchCity.addEventListener('change', () => {
+            currentPage = 1;
+            renderJobs();
+        });
+        updateCityOptions();
+
+        const filterState = {
+            salary: "不限",
+            exp: "不限",
+            edu: "不限"
+        };
+        const selectedTagsWrap = document.getElementById('selectedTagsWrap');
+        const selectedTagsBox = document.getElementById('selectedTags');
+
+        // 渲染顶部已选标签
+        function renderTags() {
+            selectedTagsBox.innerHTML = "";
+            const entries = Object.entries(filterState);
+            let hasSelected = false;
+            entries.forEach(([type, val]) => {
+                const defaultVal = { salary: "不限", exp: "不限", edu: "不限" }[type];
+                if (val !== defaultVal) {
+                    hasSelected = true;
+                    const span = document.createElement('span');
+                    span.className = "tag-pill";
+                    span.innerHTML = `${val}<i class="fa fa-times cursor-pointer ml-1" data-type="${type}"></i>`;
+                    selectedTagsBox.appendChild(span);
+                }
+            })
+            if (hasSelected) {
+                selectedTagsWrap.classList.remove('hidden');
+            } else {
+                selectedTagsWrap.classList.add('hidden');
+            }
+        }
+
+        // 筛选标签点击
+        const filterTags = document.querySelectorAll('.filter-tag');
+        filterTags.forEach(tag => {
+            tag.addEventListener('click', () => {
+                const group = tag.closest('.filter-group');
+                const type = group.dataset.type;
+                //同组取消激活
+                group.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('filter-tag-active'));
+                tag.classList.add('filter-tag-active');
+                filterState[type] = tag.dataset.val;
+                renderTags();
+            })
+        })
+
+        // 删除单个标签
+        document.addEventListener('click', e => {
+            if (e.target.matches('.tag-pill i')) {
+                const type = e.target.dataset.type;
+                const defaultVal = { salary: "不限", exp: "不限", edu: "不限" }[type];
+                filterState[type] = defaultVal;
+                //恢复左侧筛选栏激活状态
+                const group = document.querySelector(`.filter-group[data-type="${type}"]`);
+                group.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('filter-tag-active'));
+                group.querySelector(`[data-val="${defaultVal}"]`).classList.add('filter-tag-active');
+                renderTags();
+            }
+        })
+
+        // 清空全部标签
+        document.getElementById('clearAllTags').addEventListener('click', () => {
+            Object.assign(filterState, { salary: "不限", exp: "不限", edu: "不限" });
+            document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('filter-tag-active'));
+            document.querySelectorAll('.filter-tag').forEach(tag => {
+                const val = tag.dataset.val;
+                if (val === "全部" || val === "不限") {
+                    tag.classList.add('filter-tag-active');
+                }
+            })
+            renderTags();
+            currentPage = 1;
+            renderJobs();
+        })
+
+        // 重置筛选按钮
+        document.getElementById('resetFilter').addEventListener('click', () => {
+            Object.assign(filterState, { salary: "不限", exp: "不限", edu: "不限" });
+            document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('filter-tag-active'));
+            document.querySelectorAll('.filter-tag').forEach(tag => {
+                const val = tag.dataset.val;
+                if (val === "全部" || val === "不限") {
+                    tag.classList.add('filter-tag-active');
+                }
+            })
+            renderTags();
+            currentPage = 1;
+            renderJobs();
+        })
+
+        // 弹窗逻辑
+        const jobDetailModal = document.getElementById('jobDetailModal');
+        const applyModal = document.getElementById('applyModal');
+        const openDetailBtns = document.querySelectorAll('.open-detail');
+        const openApplyBtn = document.querySelector('.open-apply-modal');
+        const closeModalBtn = document.querySelector('.close-modal');
+        const closeApplyModalBtns = document.querySelectorAll('.close-apply-modal');
+
+        document.querySelectorAll('.login-coming-soon').forEach(button => {
+            button.addEventListener('click', () => {
+                alert('该功能暂未开放');
+            });
+        });
+
+        // 页面初始化时确保两个弹窗都是关闭状态
+        jobDetailModal.classList.add('hidden');
+        applyModal.classList.add('hidden');
+
+        // 岗位数据
+        const jobData = {
+            1: { title: "后端开发工程师", salary: "12k-18k", company: "恒信科技有限公司", city: "南昌", exp: "3年经验", edu: "本科" },
+            2: { title: "电商运营专员", salary: "6k-9k", company: "联达商贸集团", city: "南昌", exp: "1年经验", edu: "大专" },
+            3: { title: "UI设计师", salary: "8k-13k", company: "云途数字技术", city: "南昌", exp: "2年经验", edu: "本科" },
+            4: { title: "新媒体编导", salary: "7k-11k", company: "锐思文化传媒", city: "南昌", exp: "1-2年", edu: "大专" },
+            5: { title: "人事行政主管", salary: "7k-10k", company: "启元医药", city: "南昌", exp: "3年", edu: "本科" },
+            6: { title: "造价工程师", salary: "10k-15k", company: "博远工程建设", city: "南昌", exp: "4年", edu: "本科" },
+            7: { title: "Java开发工程师", salary: "15k-22k", company: "恒信科技有限公司", city: "上海", exp: "5年以上", edu: "本科" },
+            8: { title: "产品运营", salary: "8k-12k", company: "云途数字技术", city: "杭州", exp: "1-3年", edu: "本科" },
+            9: { title: "招聘专员", salary: "5k-8k", company: "启元医药", city: "深圳", exp: "1年以内", edu: "大专" },
+            10: { title: "平面设计师", salary: "6k-10k", company: "锐思文化传媒", city: "南昌", exp: "1-3年", edu: "大专" },
+            11: { title: "销售顾问", salary: "6k-15k", company: "联达商贸集团", city: "北京", exp: "1年以内", edu: "大专" },
+            12: { title: "项目预算员", salary: "9k-14k", company: "博远工程建设", city: "上海", exp: "3-5年", edu: "本科" },
+            13: { title: "产品经理", salary: "12k-18k", company: "云启信息技术", city: "上海", exp: "3-5年", edu: "本科" },
+            14: { title: "平面设计师", salary: "7k-11k", company: "橙意品牌设计", city: "深圳", exp: "1-3年", edu: "本科" },
+        }
+
+        openDetailBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const jobCard = btn.closest('.job-item');
+                const id = jobCard.dataset.id;
+                const j = jobData[id];
+                document.getElementById('modalJobTitle').innerText = j.title;
+                document.getElementById('modalJobSalary').innerText = j.salary;
+                document.getElementById('modalCompany').innerText = j.company;
+                document.getElementById('modalCity').innerText = j.city;
+                document.getElementById('modalExp').innerText = j.exp;
+                document.getElementById('modalEdu').innerText = j.edu;
+                jobDetailModal.classList.remove('hidden');
+            })
+        })
+
+        closeModalBtn.addEventListener('click', () => {
+            jobDetailModal.classList.add('hidden');
+        })
+        openApplyBtn.addEventListener('click', () => {
+            jobDetailModal.classList.add('hidden');
+            alert('该功能暂未开放');
+        })
+        closeApplyModalBtns.forEach(button => button.addEventListener('click', (event) => {
+            event.preventDefault();
+            applyModal.classList.add('hidden');
+        }))
+        // 点击遮罩关闭弹窗
+        jobDetailModal.addEventListener('click', (e) => {
+            if (e.target === jobDetailModal) jobDetailModal.classList.add('hidden');
+        })
+        applyModal.addEventListener('click', (e) => {
+            if (e.target === applyModal) applyModal.classList.add('hidden');
+        })
+
+        // 统一处理搜索、筛选、排序和分页
+        const jobCards = [...document.querySelectorAll('.job-item')];
+        const searchKeyword = document.getElementById('searchKeyword');
+        const jobList = document.getElementById('jobList');
+        const pageSize = 6;
+        let currentPage = 1;
+        let currentSort = 'latest';
+        let filteredJobs = [...jobCards];
+
+        function getJobInfo(card) {
+            const tags = [...card.querySelectorAll('.flex.gap-2 span')].map(tag => tag.textContent.trim());
+            const title = card.querySelector('h4').textContent.trim();
+            return {
+                card,
+                title,
+                text: card.textContent.trim(),
+                city: tags[0] || '',
+                province: cityToProvince[tags[0]] || '',
+                exp: tags[1] || '',
+                edu: tags[2] || '',
+                salary: Number.parseInt(card.querySelector('.text-secondary').textContent, 10) || 0,
+            };
+        }
+
+        function matchesFilter(info) {
+            const keyword = searchKeyword.value.trim().toLowerCase();
+            const salary = info.salary;
+            const salaryMatches = {
+                '不限': true,
+                '5k以下': salary < 5,
+                '5k-8k': salary >= 5 && salary < 8,
+                '8k-12k': salary >= 8 && salary < 12,
+                '12k-20k': salary >= 12 && salary < 20,
+                '20k以上': salary >= 20
+            };
+            const expMatches = filterState.exp === '不限' || info.exp.includes(filterState.exp.replace('以内', '').replace('年以上', '')) || (filterState.exp === '应届生' && info.exp.includes('无'));
+            return (!keyword || info.text.toLowerCase().includes(keyword))
+                && (searchProvince.value === '全部省份' || info.province === searchProvince.value)
+                && (searchCity.value === '全部城市' || info.city === searchCity.value)
+                && (salaryMatches[filterState.salary] ?? true)
+                && expMatches
+                && (filterState.edu === '不限' || info.edu === filterState.edu);
+        }
+
+        function renderJobs() {
+            const jobs = jobCards.map(getJobInfo).filter(matchesFilter);
+            if (currentSort === 'salary') jobs.sort((a, b) => b.salary - a.salary);
+            if (currentSort === 'popular') jobs.sort((a, b) => Number(b.card.dataset.id) - Number(a.card.dataset.id));
+            filteredJobs = jobs;
+            const totalPages = Math.max(1, Math.ceil(jobs.length / pageSize));
+            currentPage = Math.min(currentPage, totalPages);
+            jobCards.forEach(card => { card.classList.add('hidden'); });
+            jobs.slice((currentPage - 1) * pageSize, currentPage * pageSize).forEach(info => {
+                info.card.classList.remove('hidden');
+                jobList.appendChild(info.card);
+            });
+            let emptyState = document.getElementById('emptyJobState');
+            if (!jobs.length) {
+                if (!emptyState) {
+                    emptyState = document.createElement('p');
+                    emptyState.id = 'emptyJobState';
+                    emptyState.className = 'col-span-full text-center text-gray-400 py-12';
+                    jobList.appendChild(emptyState);
+                }
+                emptyState.textContent = '暂无符合条件的岗位，请调整筛选条件后重试';
+            } else if (emptyState) {
+                emptyState.remove();
+            }
+            const pageNumbers = document.getElementById('pageNumbers');
+            pageNumbers.innerHTML = '';
+            for (let page = 1; page <= totalPages; page += 1) {
+                const pageButton = document.createElement('div');
+                pageButton.className = `page-item${page === currentPage ? ' page-active' : ''}`;
+                pageButton.dataset.page = String(page);
+                pageButton.textContent = String(page);
+                pageNumbers.appendChild(pageButton);
+            }
+            const previousButton = document.querySelector('.page-item[data-page="prev"]');
+            const nextButton = document.querySelector('.page-item[data-page="next"]');
+            previousButton.classList.toggle('opacity-40', currentPage === 1);
+            nextButton.classList.toggle('opacity-40', currentPage === totalPages);
+            document.querySelector('.page-total').textContent = `共${jobs.length}条岗位`;
+        }
+
+        document.getElementById('searchButton').addEventListener('click', () => { currentPage = 1; renderJobs(); });
+        searchKeyword.addEventListener('keydown', event => {
+            if (event.key === 'Enter') { currentPage = 1; renderJobs(); }
+        });
+        document.querySelectorAll('.hot-keyword').forEach(link => link.addEventListener('click', event => {
+            event.preventDefault();
+            searchKeyword.value = link.dataset.keyword;
+            currentPage = 1;
+            renderJobs();
+        }));
+        document.getElementById('applyFilters').addEventListener('click', () => { currentPage = 1; renderJobs(); });
+        document.querySelectorAll('.sort-link').forEach(link => link.addEventListener('click', event => {
+            event.preventDefault();
+            currentSort = link.dataset.sort;
+            document.querySelectorAll('.sort-link').forEach(item => item.classList.remove('text-primary'));
+            link.classList.add('text-primary');
+            currentPage = 1;
+            renderJobs();
+        }));
+        document.getElementById('pagination').addEventListener('click', event => {
+            const item = event.target.closest('.page-item');
+            if (!item) return;
+            const totalPages = Math.max(1, Math.ceil(filteredJobs.length / pageSize));
+            if (item.dataset.page === 'prev') currentPage = Math.max(1, currentPage - 1);
+            else if (item.dataset.page === 'next') currentPage = Math.min(totalPages, currentPage + 1);
+            else currentPage = Math.min(totalPages, Number(item.dataset.page));
+            renderJobs();
+        });
+
+        document.querySelectorAll('.close-apply-modal').forEach(button => button.addEventListener('click', () => {
+            applyModal.classList.add('hidden');
+        }));
+        document.querySelector('.confirm-apply').addEventListener('click', () => {
+            if (!document.getElementById('agree').checked) {
+                alert('请先同意《简历投递协议》');
+                return;
+            }
+            applyModal.classList.add('hidden');
+            alert('简历已投递，祝你求职顺利！');
+        });
+
+        renderJobs();
+    </script>
+</body>
+
+</html>
