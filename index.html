@@ -359,25 +359,15 @@
                 </div>
                 <div>
                     <h4 class="font-semibold mb-2">岗位职责</h4>
-                    <p class="text-gray-600 text-sm leading-relaxed">
-                        1、负责后端业务接口开发、维护，数据库设计与优化；<br />
-                        2、参与产品需求评审，编写接口文档；<br />
-                        3、排查线上故障，保障服务稳定运行；<br />
-                        4、持续优化系统性能，推动技术迭代。
-                    </p>
+                    <p id="modalJobDescription" class="text-gray-600 text-sm leading-relaxed">暂无信息</p>
                 </div>
                 <div>
                     <h4 class="font-semibold mb-2">任职要求</h4>
-                    <p class="text-gray-600 text-sm leading-relaxed">
-                        1、本科及以上学历，计算机相关专业；<br />
-                        2、3年及以上Java后端开发经验，熟悉SpringBoot；<br />
-                        3、熟悉MySQL、Redis，了解微服务优先；<br />
-                        4、具备良好的沟通能力和团队协作。
-                    </p>
+                    <p id="modalJobRequirement" class="text-gray-600 text-sm leading-relaxed">暂无信息</p>
                 </div>
                 <div>
                     <h4 class="font-semibold mb-2">福利待遇</h4>
-                    <p class="text-gray-600 text-sm">五险一金、年终奖14薪、带薪年假、节日福利、下午茶、弹性打卡</p>
+                    <p id="modalJobBenefits" class="text-gray-600 text-sm">暂无信息</p>
                 </div>
                 <div>
                     <h4 class="font-semibold mb-2">岗位附件</h4>
@@ -687,6 +677,9 @@
             document.getElementById('modalCity').innerText = job.city;
             document.getElementById('modalExp').innerText = job.exp;
             document.getElementById('modalEdu').innerText = job.edu;
+            document.getElementById('modalJobDescription').innerText = job.description || '暂无信息';
+            document.getElementById('modalJobRequirement').innerText = job.requirement || '暂无信息';
+            document.getElementById('modalJobBenefits').innerText = job.benefits || '暂无信息';
             renderJobAttachments(job.attachments);
             jobDetailModal.classList.remove('hidden');
         });
