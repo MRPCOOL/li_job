@@ -144,42 +144,42 @@
                 <div class="bg-white rounded-lg p-4 flex flex-col items-center job-card-hover">
                     <div
                         class="w-12 h-12 rounded bg-blue-100 flex items-center justify-center text-primary font-bold mb-2">
-                        恒信</div>
+                        零跑</div>
                     <p class="font-medium text-sm">零跑汽车有限公司</p>
                     <p class="text-xs text-gray-400">在招8个岗位</p>
                 </div>
                 <div class="bg-white rounded-lg p-4 flex flex-col items-center job-card-hover">
                     <div
                         class="w-12 h-12 rounded bg-orange-100 flex items-center justify-center text-secondary font-bold mb-2">
-                        联达</div>
+                        舜宇</div>
                     <p class="font-medium text-sm">舜宇集团有限公司</p>
                     <p class="text-xs text-gray-400">在招4个岗位</p>
                 </div>
                 <div class="bg-white rounded-lg p-4 flex flex-col items-center job-card-hover">
                     <div
                         class="w-12 h-12 rounded bg-green-100 flex items-center justify-center text-green-600 font-bold mb-2">
-                        云途</div>
+                        天马</div>
                     <p class="font-medium text-sm">天马(芜湖)微电子</p>
                     <p class="text-xs text-gray-400">在招5个岗位</p>
                 </div>
                 <div class="bg-white rounded-lg p-4 flex flex-col items-center job-card-hover">
                     <div
                         class="w-12 h-12 rounded bg-purple-100 flex items-center justify-center text-purple-600 font-bold mb-2">
-                        锐思</div>
+                        甬矽</div>
                     <p class="font-medium text-sm">甬矽电子(宁波)股份</p>
                     <p class="text-xs text-gray-400">在招4个岗位</p>
                 </div>
                 <div class="bg-white rounded-lg p-4 flex flex-col items-center job-card-hover">
                     <div
                         class="w-12 h-12 rounded bg-red-100 flex items-center justify-center text-red-500 font-bold mb-2">
-                        启元</div>
+                        东信</div>
                     <p class="font-medium text-sm">芜湖东信光电科技</p>
                     <p class="text-xs text-gray-400">在招12个岗位</p>
                 </div>
                 <div class="bg-white rounded-lg p-4 flex flex-col items-center job-card-hover">
                     <div
                         class="w-12 h-12 rounded bg-cyan-100 flex items-center justify-center text-cyan-600 font-bold mb-2">
-                        博远</div>
+                        保伦</div>
                     <p class="font-medium text-sm">广东保伦电子股份</p>
                     <p class="text-xs text-gray-400">在招10个岗位</p>
                 </div>
@@ -752,12 +752,28 @@
             }
             const pageNumbers = document.getElementById('pageNumbers');
             pageNumbers.innerHTML = '';
-            for (let page = 1; page <= totalPages; page += 1) {
+            const visiblePageCount = 5;
+            const pageStart = totalPages <= visiblePageCount
+                ? 1
+                : Math.min(Math.max(1, currentPage - 2), totalPages - visiblePageCount + 1);
+            const pageEnd = Math.min(totalPages, pageStart + visiblePageCount - 1);
+
+            if (pageStart > 1) {
+                const leadingEllipsis = document.createElement('span');
+                pageNumbers.appendChild(leadingEllipsis);
+            }
+
+            for (let page = pageStart; page <= pageEnd; page += 1) {
                 const pageButton = document.createElement('div');
                 pageButton.className = `page-item${page === currentPage ? ' page-active' : ''}`;
                 pageButton.dataset.page = String(page);
                 pageButton.textContent = String(page);
                 pageNumbers.appendChild(pageButton);
+            }
+
+            if (pageEnd < totalPages) {
+                const trailingEllipsis = document.createElement('span');
+                pageNumbers.appendChild(trailingEllipsis);
             }
             const previousButton = document.querySelector('.page-item[data-page="prev"]');
             const nextButton = document.querySelector('.page-item[data-page="next"]');
