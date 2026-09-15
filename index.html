@@ -93,8 +93,8 @@
     <section class="bg-gradient-to-r from-blue-600 to-blue-500 py-14">
         <div class="container mx-auto px-4">
             <div class="max-w-3xl mx-auto text-center mb-8">
-                <h2 class="text-[clamp(1.8rem,4vw,2.8rem)] text-white font-bold mb-3">找好工作，上优聘</h2>
-                <p class="text-blue-100">汇聚3200+企业真实岗位，百万求职者的求职选择</p>
+                <h2 class="text-[clamp(1.8rem,4vw,2.8rem)] text-white font-bold mb-3">好工作，找李总</h2>
+                <p class="text-blue-100">汇聚9900+企业真实岗位，江职大优秀学子优选</p>
             </div>
             <div class="bg-white rounded-xl p-4 shadow-md max-w-3xl mx-auto">
                 <div class="flex flex-col sm:flex-row gap-3">
@@ -125,7 +125,7 @@
     </section>
 
     <main class="container mx-auto px-4 py-10">
-        <!-- ✅ 已选筛选标签栏 -->
+        <!-- 筛选标签栏 -->
         <div id="selectedTagsWrap" class="mb-6 hidden">
             <div class="bg-white p-4 rounded-lg shadow-sm flex flex-wrap items-center">
                 <span class="text-gray-500 mr-3 text-sm">已选条件：</span>
@@ -141,42 +141,42 @@
                 <a href="#" class="text-primary text-sm">查看更多 <i class="fa fa-angle-right"></i></a>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                <div class="bg-white rounded-lg p-4 flex flex-col items-center job-card-hover">
+                <div class="bg-white rounded-lg p-4 flex flex-col items-center job-card-hover cursor-pointer company-card" data-company-keyword="零跑" role="button" tabindex="0">
                     <div
                         class="w-12 h-12 rounded bg-blue-100 flex items-center justify-center text-primary font-bold mb-2">
                         零跑</div>
                     <p class="font-medium text-sm">零跑汽车有限公司</p>
                     <p class="text-xs text-gray-400">在招8个岗位</p>
                 </div>
-                <div class="bg-white rounded-lg p-4 flex flex-col items-center job-card-hover">
+                <div class="bg-white rounded-lg p-4 flex flex-col items-center job-card-hover cursor-pointer company-card" data-company-keyword="舜宇" role="button" tabindex="0">
                     <div
                         class="w-12 h-12 rounded bg-orange-100 flex items-center justify-center text-secondary font-bold mb-2">
                         舜宇</div>
                     <p class="font-medium text-sm">舜宇集团有限公司</p>
                     <p class="text-xs text-gray-400">在招4个岗位</p>
                 </div>
-                <div class="bg-white rounded-lg p-4 flex flex-col items-center job-card-hover">
+                <div class="bg-white rounded-lg p-4 flex flex-col items-center job-card-hover cursor-pointer company-card" data-company-keyword="天马" role="button" tabindex="0">
                     <div
                         class="w-12 h-12 rounded bg-green-100 flex items-center justify-center text-green-600 font-bold mb-2">
                         天马</div>
                     <p class="font-medium text-sm">天马(芜湖)微电子</p>
                     <p class="text-xs text-gray-400">在招5个岗位</p>
                 </div>
-                <div class="bg-white rounded-lg p-4 flex flex-col items-center job-card-hover">
+                <div class="bg-white rounded-lg p-4 flex flex-col items-center job-card-hover cursor-pointer company-card" data-company-keyword="甬矽" role="button" tabindex="0">
                     <div
                         class="w-12 h-12 rounded bg-purple-100 flex items-center justify-center text-purple-600 font-bold mb-2">
                         甬矽</div>
                     <p class="font-medium text-sm">甬矽电子(宁波)股份</p>
                     <p class="text-xs text-gray-400">在招4个岗位</p>
                 </div>
-                <div class="bg-white rounded-lg p-4 flex flex-col items-center job-card-hover">
+                <div class="bg-white rounded-lg p-4 flex flex-col items-center job-card-hover cursor-pointer company-card" data-company-keyword="东信" role="button" tabindex="0">
                     <div
                         class="w-12 h-12 rounded bg-red-100 flex items-center justify-center text-red-500 font-bold mb-2">
                         东信</div>
                     <p class="font-medium text-sm">芜湖东信光电科技</p>
-                    <p class="text-xs text-gray-400">在招12个岗位</p>
+                    <p class="text-xs text-gray-400">在招4个岗位</p>
                 </div>
-                <div class="bg-white rounded-lg p-4 flex flex-col items-center job-card-hover">
+                <div class="bg-white rounded-lg p-4 flex flex-col items-center job-card-hover cursor-pointer company-card" data-company-keyword="保伦" role="button" tabindex="0">
                     <div
                         class="w-12 h-12 rounded bg-cyan-100 flex items-center justify-center text-cyan-600 font-bold mb-2">
                         保伦</div>
@@ -222,17 +222,6 @@
                         </div>
                     </div>
 
-                    <!-- 学历 -->
-                    <div class="mb-6 filter-group" data-type="edu">
-                        <p class="font-medium text-sm mb-3">学历要求</p>
-                        <div>
-                            <span class="filter-tag filter-tag-active" data-val="不限">不限</span>
-                            <span class="filter-tag" data-val="大专">大专</span>
-                            <span class="filter-tag" data-val="本科">本科</span>
-                            <span class="filter-tag" data-val="硕士">硕士</span>
-                        </div>
-                    </div>
-
                     <button id="applyFilters" class="btn-primary w-full mt-4">确认筛选</button>
                 </div>
             </div>
@@ -240,7 +229,7 @@
             <!-- 右侧岗位列表 -->
             <div class="lg:col-span-3">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-bold text-neutral">最新招聘岗位</h3>
+                    <h3 id="jobListTitle" class="text-xl font-bold text-neutral scroll-mt-28">最新招聘岗位</h3>
                     <div class="flex gap-3 text-sm">
                         <a href="#" class="text-primary sort-link" data-sort="latest">最新发布</a>
                         <a href="#" class="sort-link" data-sort="salary">薪资优先</a>
@@ -479,8 +468,7 @@
 
         const filterState = {
             salary: "不限",
-            exp: "不限",
-            edu: "不限"
+            exp: "不限"
         };
         const selectedTagsWrap = document.getElementById('selectedTagsWrap');
         const selectedTagsBox = document.getElementById('selectedTags');
@@ -491,7 +479,7 @@
             const entries = Object.entries(filterState);
             let hasSelected = false;
             entries.forEach(([type, val]) => {
-                const defaultVal = { salary: "不限", exp: "不限", edu: "不限" }[type];
+                const defaultVal = { salary: "不限", exp: "不限" }[type];
                 if (val !== defaultVal) {
                     hasSelected = true;
                     const span = document.createElement('span');
@@ -525,7 +513,7 @@
         document.addEventListener('click', e => {
             if (e.target.matches('.tag-pill i')) {
                 const type = e.target.dataset.type;
-                const defaultVal = { salary: "不限", exp: "不限", edu: "不限" }[type];
+                const defaultVal = { salary: "不限", exp: "不限" }[type];
                 filterState[type] = defaultVal;
                 //恢复左侧筛选栏激活状态
                 const group = document.querySelector(`.filter-group[data-type="${type}"]`);
@@ -537,7 +525,7 @@
 
         // 清空全部标签
         document.getElementById('clearAllTags').addEventListener('click', () => {
-            Object.assign(filterState, { salary: "不限", exp: "不限", edu: "不限" });
+            Object.assign(filterState, { salary: "不限", exp: "不限" });
             document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('filter-tag-active'));
             document.querySelectorAll('.filter-tag').forEach(tag => {
                 const val = tag.dataset.val;
@@ -552,7 +540,7 @@
 
         // 重置筛选按钮
         document.getElementById('resetFilter').addEventListener('click', () => {
-            Object.assign(filterState, { salary: "不限", exp: "不限", edu: "不限" });
+            Object.assign(filterState, { salary: "不限", exp: "不限" });
             document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('filter-tag-active'));
             document.querySelectorAll('.filter-tag').forEach(tag => {
                 const val = tag.dataset.val;
@@ -608,10 +596,36 @@
         const jobDataUrl = './jobs.json';
         const searchKeyword = document.getElementById('searchKeyword');
         const jobList = document.getElementById('jobList');
+        const jobListTitle = document.getElementById('jobListTitle');
         const pageSize = 6;
         let currentPage = 1;
         let currentSort = 'latest';
+        let companyKeyword = '';
         let filteredJobs = [...jobCards];
+
+        function updateJobListTitle() {
+            const keyword = searchKeyword.value.trim();
+            jobListTitle.textContent = keyword ? `“${keyword}”的搜索结果` : '最新招聘岗位';
+        }
+
+        function selectCompany(company) {
+            companyKeyword = company;
+            searchKeyword.value = company;
+            currentPage = 1;
+            renderJobs();
+            jobListTitle.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        document.querySelectorAll('.company-card').forEach(card => {
+            const openCompany = () => selectCompany(card.dataset.companyKeyword);
+            card.addEventListener('click', openCompany);
+            card.addEventListener('keydown', event => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    openCompany();
+                }
+            });
+        });
 
         function createJobCard(job) {
             const card = document.createElement('div');
@@ -712,11 +726,11 @@
             };
             const expMatches = filterState.exp === '不限' || info.exp.includes(filterState.exp.replace('以内', '').replace('年以上', '')) || (filterState.exp === '应届生' && info.exp.includes('无'));
             return (!keyword || info.text.toLowerCase().includes(keyword))
+                && (!companyKeyword || info.text.includes(companyKeyword))
                 && (searchProvince.value === '全部省份' || info.province === searchProvince.value)
                 && (searchCity.value === '全部城市' || info.city === searchCity.value)
                 && (salaryMatches[filterState.salary] ?? true)
-                && expMatches
-                && (filterState.edu === '不限' || info.edu === filterState.edu);
+                && expMatches;
         }
 
         function renderJobs() {
@@ -724,6 +738,7 @@
             if (currentSort === 'salary') jobs.sort((a, b) => b.salary - a.salary);
             if (currentSort === 'popular') jobs.sort((a, b) => Number(b.card.dataset.id) - Number(a.card.dataset.id));
             filteredJobs = jobs;
+            updateJobListTitle();
             const totalPages = Math.max(1, Math.ceil(jobs.length / pageSize));
             currentPage = Math.min(currentPage, totalPages);
             jobCards.forEach(card => { card.classList.add('hidden'); });
@@ -775,13 +790,22 @@
             document.getElementById('totalJobs').textContent = `共${jobs.length}条岗位`;
         }
 
-        document.getElementById('searchButton').addEventListener('click', () => { currentPage = 1; renderJobs(); });
+        document.getElementById('searchButton').addEventListener('click', () => {
+            companyKeyword = '';
+            currentPage = 1;
+            renderJobs();
+        });
         searchKeyword.addEventListener('keydown', event => {
-            if (event.key === 'Enter') { currentPage = 1; renderJobs(); }
+            if (event.key === 'Enter') {
+                companyKeyword = '';
+                currentPage = 1;
+                renderJobs();
+            }
         });
         document.querySelectorAll('.hot-keyword').forEach(link => link.addEventListener('click', event => {
             event.preventDefault();
             searchKeyword.value = link.dataset.keyword;
+            companyKeyword = '';
             currentPage = 1;
             renderJobs();
         }));
