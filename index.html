@@ -222,6 +222,18 @@
                         </div>
                     </div>
 
+                    <!-- 企业类型 -->
+                    <div class="mb-6 filter-group" data-type="enterpriseType">
+                        <p class="font-medium text-sm mb-3">企业类型</p>
+                        <div>
+                            <span class="filter-tag filter-tag-active" data-val="不限">不限</span>
+                            <span class="filter-tag" data-val="国企">国企</span>
+                            <span class="filter-tag" data-val="民企">民企</span>
+                            <span class="filter-tag" data-val="上市民企">上市民企</span>
+                            <span class="filter-tag" data-val="外企">外企</span>
+                        </div>
+                    </div>
+
                     <button id="applyFilters" class="btn-primary w-full mt-4">确认筛选</button>
                 </div>
             </div>
@@ -330,21 +342,21 @@
         <div class="modal-box p-6">
             <div class="flex justify-between items-center border-b pb-4 mb-4">
                 <div>
-                    <h2 class="text-xl font-bold text-neutral" id="modalJobTitle">后端开发工程师</h2>
-                    <p class="text-secondary font-bold text-lg" id="modalJobSalary">12k-18k</p>
+                    <h2 class="text-xl font-bold text-neutral" id="modalJobTitle">暂无信息</h2>
+                    <p class="text-secondary font-bold text-lg" id="modalJobSalary">暂无信息</p>
                 </div>
                 <button class="close-modal text-gray-400 text-xl"><i class="fa fa-times"></i></button>
             </div>
             <div class="space-y-4">
                 <div class="flex gap-3 flex-wrap">
-                    <span class="bg-gray-100 px-3 py-1 rounded text-sm" id="modalCity">南昌</span>
-                    <span class="bg-gray-100 px-3 py-1 rounded text-sm" id="modalExp">3年经验</span>
-                    <span class="bg-gray-100 px-3 py-1 rounded text-sm" id="modalEdu">本科</span>
+                    <span class="bg-gray-100 px-3 py-1 rounded text-sm" id="modalCity">暂无信息</span>
+                    <span class="bg-gray-100 px-3 py-1 rounded text-sm" id="modalExp">暂无信息</span>
+                    <span class="bg-gray-100 px-3 py-1 rounded text-sm" id="modalEdu">暂无信息</span>
                 </div>
                 <div>
                     <h4 class="font-semibold mb-2">公司信息</h4>
-                    <p id="modalCompany" class="text-gray-600">恒信科技有限公司</p>
-                    <p class="text-gray-500 text-sm mt-1">互联网 | 50-100人 | 民营</p>
+                    <p id="modalCompany" class="text-gray-600">暂无信息</p>
+                    <p id="modalCompanyInfo" class="text-gray-500 text-sm mt-1">暂无信息 | 暂无信息 | 暂无信息</p>
                 </div>
                 <div>
                     <h4 class="font-semibold mb-2">岗位职责</h4>
@@ -357,6 +369,10 @@
                 <div>
                     <h4 class="font-semibold mb-2">福利待遇</h4>
                     <p id="modalJobBenefits" class="text-gray-600 text-sm">暂无信息</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-2">联系方式</h4>
+                    <p id="modalJobContact" class="text-gray-600 text-sm">暂无信息</p>
                 </div>
                 <div>
                     <h4 class="font-semibold mb-2">岗位附件</h4>
@@ -468,7 +484,8 @@
 
         const filterState = {
             salary: "不限",
-            exp: "不限"
+            exp: "不限",
+            enterpriseType: "不限"
         };
         const selectedTagsWrap = document.getElementById('selectedTagsWrap');
         const selectedTagsBox = document.getElementById('selectedTags');
@@ -479,7 +496,7 @@
             const entries = Object.entries(filterState);
             let hasSelected = false;
             entries.forEach(([type, val]) => {
-                const defaultVal = { salary: "不限", exp: "不限" }[type];
+                const defaultVal = { salary: "不限", exp: "不限", enterpriseType: "不限" }[type];
                 if (val !== defaultVal) {
                     hasSelected = true;
                     const span = document.createElement('span');
@@ -513,7 +530,7 @@
         document.addEventListener('click', e => {
             if (e.target.matches('.tag-pill i')) {
                 const type = e.target.dataset.type;
-                const defaultVal = { salary: "不限", exp: "不限" }[type];
+                const defaultVal = { salary: "不限", exp: "不限", enterpriseType: "不限" }[type];
                 filterState[type] = defaultVal;
                 //恢复左侧筛选栏激活状态
                 const group = document.querySelector(`.filter-group[data-type="${type}"]`);
@@ -525,7 +542,7 @@
 
         // 清空全部标签
         document.getElementById('clearAllTags').addEventListener('click', () => {
-            Object.assign(filterState, { salary: "不限", exp: "不限" });
+            Object.assign(filterState, { salary: "不限", exp: "不限", enterpriseType: "不限" });
             document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('filter-tag-active'));
             document.querySelectorAll('.filter-tag').forEach(tag => {
                 const val = tag.dataset.val;
@@ -540,7 +557,7 @@
 
         // 重置筛选按钮
         document.getElementById('resetFilter').addEventListener('click', () => {
-            Object.assign(filterState, { salary: "不限", exp: "不限" });
+            Object.assign(filterState, { salary: "不限", exp: "不限", enterpriseType: "不限" });
             document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('filter-tag-active'));
             document.querySelectorAll('.filter-tag').forEach(tag => {
                 const val = tag.dataset.val;
@@ -688,12 +705,16 @@
             document.getElementById('modalJobTitle').innerText = job.title;
             document.getElementById('modalJobSalary').innerText = job.salary;
             document.getElementById('modalCompany').innerText = job.company;
+            document.getElementById('modalCompanyInfo').innerText = [job.industryType, job.companySize, job.enterpriseType]
+                .map(value => value || '暂无信息')
+                .join(' | ');
             document.getElementById('modalCity').innerText = job.city;
             document.getElementById('modalExp').innerText = job.exp;
             document.getElementById('modalEdu').innerText = job.edu;
             document.getElementById('modalJobDescription').innerText = job.description || '暂无信息';
             document.getElementById('modalJobRequirement').innerText = job.requirement || '暂无信息';
             document.getElementById('modalJobBenefits').innerText = job.benefits || '暂无信息';
+            document.getElementById('modalJobContact').innerText = job.contact || '暂无信息';
             renderJobAttachments(job.attachments);
             jobDetailModal.classList.remove('hidden');
         });
@@ -725,12 +746,15 @@
                 '20k以上': salary >= 20
             };
             const expMatches = filterState.exp === '不限' || info.exp.includes(filterState.exp.replace('以内', '').replace('年以上', '')) || (filterState.exp === '应届生' && info.exp.includes('无'));
+            const enterpriseType = jobData[info.card.dataset.id]?.enterpriseType || '';
+            const enterpriseTypeMatches = filterState.enterpriseType === '不限' || enterpriseType === filterState.enterpriseType;
             return (!keyword || info.text.toLowerCase().includes(keyword))
                 && (!companyKeyword || info.text.includes(companyKeyword))
                 && (searchProvince.value === '全部省份' || info.province === searchProvince.value)
                 && (searchCity.value === '全部城市' || info.city === searchCity.value)
                 && (salaryMatches[filterState.salary] ?? true)
-                && expMatches;
+                && expMatches
+                && enterpriseTypeMatches;
         }
 
         function renderJobs() {
