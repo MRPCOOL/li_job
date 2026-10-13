@@ -138,7 +138,7 @@
         <section class="mb-12">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-xl font-bold text-neutral">热门在招企业</h3>
-                <a href="#" class="text-primary text-sm">查看更多 <i class="fa fa-angle-right"></i></a>
+                <a href="./companies.html" class="text-primary text-sm">查看更多 <i class="fa fa-angle-right"></i></a>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                 <div class="bg-white rounded-lg p-4 flex flex-col items-center job-card-hover cursor-pointer company-card" data-company-keyword="零跑" role="button" tabindex="0">
@@ -614,6 +614,7 @@
         const searchKeyword = document.getElementById('searchKeyword');
         const jobList = document.getElementById('jobList');
         const jobListTitle = document.getElementById('jobListTitle');
+        const initialKeyword = new URLSearchParams(window.location.search).get('keyword');
         const pageSize = 6;
         let currentPage = 1;
         let currentSort = 'latest';
@@ -674,7 +675,7 @@
             const validJobs = jobs.filter(job => job.id && job.title && job.salary && job.company && job.city && job.exp && job.edu && job.description);
             jobData = Object.fromEntries(validJobs.map(job => [job.id, job]));
             jobList.innerHTML = '';
-            validJobs.forEach(job => jobList.appendChild(createJobCard(job)));
+            [...validJobs].reverse().forEach(job => jobList.appendChild(createJobCard(job)));
             jobCards = [...jobList.querySelectorAll('.job-item')];
             filteredJobs = [...jobCards];
         }
@@ -865,7 +866,10 @@
         });
 
         loadJobs()
-            .then(() => renderJobs())
+            .then(() => {
+                if (initialKeyword) searchKeyword.value = initialKeyword;
+                renderJobs();
+            })
             .catch(error => {
                 console.error(error);
                 document.getElementById('totalJobs').textContent = '岗位数据加载失败';
