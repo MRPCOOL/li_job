@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>招聘会 - 算力引擎 - 靠谱求职招聘平台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        secondary: '#f97316',
+                        neutral: '#1f2937',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .job-card-hover {
+                @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border border-gray-100;
+            }
+            .btn-primary {
+                @apply bg-primary text-white px-5 py-2 rounded-lg hover:bg-primary/90 transition;
+            }
+            .btn-secondary {
+                @apply bg-white text-primary border border-primary px-5 py-2 rounded-lg hover:bg-primary/5 transition;
+            }
+            .page-item {
+                @apply w-9 h-9 flex items-center justify-center rounded border border-gray-200 hover:border-primary hover:text-primary cursor-pointer transition;
+            }
+            .page-active {
+                @apply bg-primary text-white border-primary;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-700">
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <i class="fa fa-briefcase text-primary text-2xl"></i>
+                <span class="text-xl font-bold text-neutral">算力引擎</span>
+            </div>
+            <nav class="hidden md:flex items-center gap-7 text-sm">
+                <a href="./li-job.html">首页</a>
+                <a href="#">找工作</a>
+                <a href="#">招人才</a>
+                <a href="./job-fair.html" class="text-primary font-medium">招聘会</a>
+                <a href="#">职场资讯</a>
+                <a href="#">帮助中心</a>
+            </nav>
+            <div class="flex items-center gap-3">
+                <button class="btn-secondary text-sm login-coming-soon">企业登录</button>
+                <button class="btn-primary text-sm login-coming-soon">个人登录</button>
+            </div>
+        </div>
+    </header>
+
+    <section class="bg-gradient-to-r from-blue-600 to-blue-500 py-14">
+        <div class="container mx-auto px-4">
+            <div class="max-w-3xl mx-auto text-center mb-8">
+                <h2 class="text-[clamp(1.8rem,4vw,2.8rem)] text-white font-bold mb-3">专场招聘会</h2>
+                <p class="text-blue-100">汇聚校园双选会、各地线下专场，掌握最新招聘会活动信息</p>
+            </div>
+            <div class="bg-white rounded-xl p-4 shadow-md max-w-3xl mx-auto">
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <input id="fairSearchKeyword" type="text" placeholder="招聘会名称 / 城市 / 举办单位"
+                        class="flex-1 border border-gray-200 rounded-lg px-4 py-3 outline-none focus:border-primary">
+                    <select id="fairStatusSelect"
+                        class="border border-gray-200 rounded-lg px-4 py-3 outline-none focus:border-primary">
+                        <option value="all">全部状态</option>
+                        <option value="upcoming">即将开始</option>
+                        <option value="ongoing">正在进行</option>
+                        <option value="ended">已结束</option>
+                    </select>
+                    <button id="fairSearchBtn" class="btn-primary py-3">
+                        <i class="fa fa-search mr-1"></i>搜索招聘会
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <main class="container mx-auto px-4 py-10">
+        <div class="flex justify-between items-center mb-6">
+            <h3 id="fairListTitle" class="text-xl font-bold text-neutral">全部招聘会</h3>
+        </div>
+
+        <div id="fairListWrap" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"></div>
+        <div id="fairEmptyTip" class="hidden text-center text-gray-400 py-12">
+            没有找到匹配的招聘会，请调整搜索条件
+        </div>
+        <div id="fairLoadError" class="hidden text-center text-red-500 py-12" role="alert">
+            招聘会数据加载失败，请刷新页面重试
+        </div>
+
+        <div id="fairPagination" class="flex justify-center items-center gap-2 flex-wrap">
+            <button type="button" class="page-item" data-page="prev" aria-label="上一页">
+                <i class="fa fa-angle-left"></i>
+            </button>
+            <div id="fairPageNumbers" class="flex items-center gap-2"></div>
+            <button type="button" class="page-item" data-page="next" aria-label="下一页">
+                <i class="fa fa-angle-right"></i>
+            </button>
+            <div id="fairTotal" class="ml-4 text-sm text-gray-500">共0场招聘会</div>
+        </div>
+    </main>
+
+    <footer class="bg-neutral text-white py-10 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <i class="fa fa-briefcase text-primary text-2xl"></i>
+                        <span class="text-xl font-bold">算力引擎</span>
+                    </div>
+                    <p class="text-gray-400 text-sm">优聘人才，专注本地求职招聘服务，连接企业与人才，助力高效就业。</p>
+                </div>
+                <div>
+                    <h5 class="font-medium mb-4">求职者</h5>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="#">搜索职位</a></li>
+                        <li><a href="#">简历管理</a></li>
+                        <li><a href="#">求职指南</a></li>
+                        <li><a href="#">防骗提醒</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-medium mb-4">企业服务</h5>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="#">企业入驻</a></li>
+                        <li><a href="#">发布岗位</a></li>
+                        <li><a href="#">人才搜索</a></li>
+                        <li><a href="#">收费套餐</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-medium mb-4">联系我们</h5>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><i class="fa fa-phone mr-2"></i>0791-88XXXXXX</li>
+                        <li><i class="fa fa-envelope mr-2"></i>contact@youpin-job.com</li>
+                        <li><i class="fa fa-map-marker mr-2"></i>南昌市红谷滩新区</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-500 text-sm">
+                © 2026 江西慧点奇丰科技有限公司 版权所有 | 赣ICP备XXXXXXXX号
+                <span class="mx-2">|</span>
+                <a href="#">隐私政策</a>
+                <span class="mx-2">|</span>
+                <a href="#">用户协议</a>
+                <span class="mx-2">|</span>
+                <a href="#">免责声明</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const pageSize = 10;
+        const statusMap = {
+            upcoming: { text: '即将开始', className: 'bg-blue-100 text-blue-700' },
+            ongoing: { text: '正在进行', className: 'bg-green-100 text-green-700' },
+            ended: { text: '已结束', className: 'bg-gray-100 text-gray-500' },
+        };
+        const fairListWrap = document.getElementById('fairListWrap');
+        const fairEmptyTip = document.getElementById('fairEmptyTip');
+        const fairLoadError = document.getElementById('fairLoadError');
+        const fairPageNumbers = document.getElementById('fairPageNumbers');
+        const fairPagination = document.getElementById('fairPagination');
+        const fairTotal = document.getElementById('fairTotal');
+        const fairSearchKeyword = document.getElementById('fairSearchKeyword');
+        const fairStatusSelect = document.getElementById('fairStatusSelect');
+        let fairListData = [];
+        let filteredFair = [];
+        let currentPage = 1;
+
+        function createTextElement(tagName, className, text) {
+            const element = document.createElement(tagName);
+            element.className = className;
+            element.textContent = text;
+            return element;
+        }
+
+        function createFairCard(fair) {
+            const card = document.createElement('a');
+            card.href = `./job-fair-detail.html?id=${encodeURIComponent(fair.id)}`;
+            card.className = 'bg-white rounded-xl p-5 job-card-hover block';
+            card.setAttribute('aria-label', `查看招聘会：${fair.title}`);
+
+            const heading = document.createElement('div');
+            heading.className = 'flex justify-between items-start gap-3 mb-4';
+            heading.appendChild(createTextElement('h4', 'font-semibold text-base leading-tight text-neutral', fair.title || '未命名招聘会'));
+
+            const status = statusMap[fair.status] || { text: '状态待更新', className: 'bg-gray-100 text-gray-500' };
+            const statusBadge = createTextElement('span', `text-xs px-2 py-1 rounded-full shrink-0 ${status.className}`, status.text);
+            heading.appendChild(statusBadge);
+            card.appendChild(heading);
+
+            const details = document.createElement('div');
+            details.className = 'text-sm text-gray-600 space-y-2 mb-4';
+            [
+                ['fa-map-marker', '举办地点', fair.address || fair.city || '地点待定'],
+                ['fa-calendar', '举办时间', `${fair.startTime || '时间待定'}${fair.endTime ? ` 至 ${fair.endTime}` : ''}`],
+                ['fa-university', '举办单位', fair.organizer || '举办单位待定'],
+            ].forEach(([icon, label, value]) => {
+                const row = document.createElement('p');
+                row.className = 'flex items-start';
+                const iconElement = document.createElement('i');
+                iconElement.className = `fa ${icon} text-primary w-5 mt-0.5`;
+                iconElement.setAttribute('aria-hidden', 'true');
+                row.appendChild(iconElement);
+                row.appendChild(createTextElement('span', 'sr-only', `${label}：`));
+                row.appendChild(createTextElement('span', '', value));
+                details.appendChild(row);
+            });
+            card.appendChild(details);
+
+            const footer = document.createElement('div');
+            footer.className = 'flex justify-between items-center border-t border-gray-100 pt-4';
+            footer.appendChild(createTextElement('span', 'text-xs text-gray-400', `参会企业：${fair.companyCount ?? 0}家`));
+            footer.appendChild(createTextElement('span', 'text-primary text-sm', '查看详情  ›'));
+            card.appendChild(footer);
+
+            return card;
+        }
+
+        function renderPagination() {
+            const totalPages = Math.max(1, Math.ceil(filteredFair.length / pageSize));
+            currentPage = Math.min(currentPage, totalPages);
+            fairPageNumbers.innerHTML = '';
+
+            const visiblePageCount = 5;
+            const pageStart = totalPages <= visiblePageCount
+                ? 1
+                : Math.min(Math.max(1, currentPage - 2), totalPages - visiblePageCount + 1);
+            const pageEnd = Math.min(totalPages, pageStart + visiblePageCount - 1);
+
+            if (pageStart > 1) fairPageNumbers.appendChild(createTextElement('span', 'px-1 text-gray-400', '…'));
+            for (let page = pageStart; page <= pageEnd; page += 1) {
+                const pageButton = document.createElement('button');
+                pageButton.type = 'button';
+                pageButton.className = `page-item${page === currentPage ? ' page-active' : ''}`;
+                pageButton.dataset.page = String(page);
+                pageButton.textContent = String(page);
+                pageButton.setAttribute('aria-label', `第${page}页`);
+                pageButton.setAttribute('aria-current', page === currentPage ? 'page' : 'false');
+                fairPageNumbers.appendChild(pageButton);
+            }
+            if (pageEnd < totalPages) fairPageNumbers.appendChild(createTextElement('span', 'px-1 text-gray-400', '…'));
+
+            fairPagination.querySelector('[data-page="prev"]').disabled = currentPage === 1;
+            fairPagination.querySelector('[data-page="next"]').disabled = currentPage === totalPages;
+            fairPagination.querySelector('[data-page="prev"]').classList.toggle('opacity-40', currentPage === 1);
+            fairPagination.querySelector('[data-page="next"]').classList.toggle('opacity-40', currentPage === totalPages);
+        }
+
+        function renderFairList() {
+            const keyword = fairSearchKeyword.value.trim().toLocaleLowerCase();
+            const selectedStatus = fairStatusSelect.value;
+            filteredFair = fairListData.filter(fair => {
+                const searchableText = [fair.title, fair.city, fair.address, fair.organizer]
+                    .filter(Boolean)
+                    .join(' ')
+                    .toLocaleLowerCase();
+                return (!keyword || searchableText.includes(keyword))
+                    && (selectedStatus === 'all' || fair.status === selectedStatus);
+            });
+
+            fairListWrap.innerHTML = '';
+            fairTotal.textContent = `共${filteredFair.length}场招聘会`;
+            document.getElementById('fairListTitle').textContent = keyword ? `“${fairSearchKeyword.value.trim()}”的搜索结果` : '全部招聘会';
+            fairEmptyTip.classList.toggle('hidden', filteredFair.length > 0);
+            fairPagination.classList.toggle('hidden', filteredFair.length === 0);
+            renderPagination();
+
+            const startIndex = (currentPage - 1) * pageSize;
+            filteredFair.slice(startIndex, startIndex + pageSize).forEach(fair => {
+                fairListWrap.appendChild(createFairCard(fair));
+            });
+        }
+
+        document.getElementById('fairSearchBtn').addEventListener('click', () => {
+            currentPage = 1;
+            renderFairList();
+        });
+        fairSearchKeyword.addEventListener('keydown', event => {
+            if (event.key === 'Enter') {
+                currentPage = 1;
+                renderFairList();
+            }
+        });
+        fairStatusSelect.addEventListener('change', () => {
+            currentPage = 1;
+            renderFairList();
+        });
+        fairPagination.addEventListener('click', event => {
+            const button = event.target.closest('button[data-page]');
+            if (!button || button.disabled) return;
+
+            const totalPages = Math.max(1, Math.ceil(filteredFair.length / pageSize));
+            if (button.dataset.page === 'prev') currentPage = Math.max(1, currentPage - 1);
+            else if (button.dataset.page === 'next') currentPage = Math.min(totalPages, currentPage + 1);
+            else currentPage = Math.min(totalPages, Number(button.dataset.page));
+            renderFairList();
+        });
+        document.querySelectorAll('.login-coming-soon').forEach(button => {
+            button.addEventListener('click', () => alert('该功能暂未开放'));
+        });
+
+        async function loadFairData() {
+            try {
+                const response = await fetch('./fair%E2%80%91list.json');
+                if (!response.ok) throw new Error(`招聘会数据加载失败：HTTP ${response.status}`);
+                const data = await response.json();
+                if (!Array.isArray(data)) throw new Error('招聘会数据格式错误：预期为数组');
+                fairListData = data;
+                renderFairList();
+            } catch (error) {
+                console.error(error);
+                fairLoadError.classList.remove('hidden');
+                fairPagination.classList.add('hidden');
+            }
+        }
+
+        loadFairData();
+    </script>
+</body>
+
+</html>

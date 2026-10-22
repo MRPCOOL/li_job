@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>招聘会详情 - 算力引擎</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        secondary: '#f97316',
+                        neutral: '#1f2937',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        .modal-bg.hidden {
+            display: none !important;
+        }
+
+        @layer utilities {
+            .job-card-hover {
+                @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border border-gray-100;
+            }
+            .btn-primary {
+                @apply bg-primary text-white px-5 py-2 rounded-lg hover:bg-primary/90 transition;
+            }
+            .btn-secondary {
+                @apply bg-white text-primary border border-primary px-5 py-2 rounded-lg hover:bg-primary/5 transition;
+            }
+            .page-item {
+                @apply w-9 h-9 flex items-center justify-center rounded border border-gray-200 hover:border-primary hover:text-primary cursor-pointer transition;
+            }
+            .page-active {
+                @apply bg-primary text-white border-primary;
+            }
+            .modal-bg {
+                @apply fixed inset-0 bg-black/50 z-[90] flex items-center justify-center p-4;
+            }
+            .modal-box {
+                @apply bg-white rounded-xl w-full max-w-2xl max-h-[85vh] overflow-y-auto;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-700">
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <a href="./li-job.html" class="flex items-center gap-2">
+                <i class="fa fa-briefcase text-primary text-2xl"></i>
+                <span class="text-xl font-bold text-neutral">算力引擎</span>
+            </a>
+            <nav class="hidden md:flex items-center gap-7 text-sm">
+                <a href="./li-job.html">首页</a>
+                <a href="#">找工作</a>
+                <a href="#">招人才</a>
+                <a href="./job-fair.html" class="text-primary font-medium">招聘会</a>
+                <a href="#">职场资讯</a>
+                <a href="#">帮助中心</a>
+            </nav>
+            <div class="flex items-center gap-3">
+                <button class="btn-secondary text-sm login-coming-soon">企业登录</button>
+                <button class="btn-primary text-sm login-coming-soon">个人登录</button>
+            </div>
+        </div>
+    </header>
+
+    <section class="bg-gradient-to-r from-blue-600 to-blue-500 py-10 md:py-14">
+        <div class="container mx-auto px-4">
+            <a href="./job-fair.html" class="inline-flex items-center text-blue-100 hover:text-white text-sm mb-5">
+                <i class="fa fa-angle-left mr-2"></i>返回招聘会列表
+            </a>
+            <div class="bg-white rounded-2xl p-6 md:p-8 shadow-lg">
+                <div class="flex flex-wrap items-center gap-3 mb-3">
+                    <span id="fairStatus" class="text-xs px-3 py-1 rounded-full bg-blue-100 text-blue-700">加载中</span>
+                    <span id="fairCity" class="text-sm text-gray-500"></span>
+                </div>
+                <h1 id="fairTitle" class="text-2xl md:text-3xl font-bold text-neutral mb-5">招聘会详情</h1>
+                <p id="fairDescription" class="text-gray-600 leading-relaxed mb-6"></p>
+                <div class="grid sm:grid-cols-2 gap-x-8 gap-y-4 text-sm">
+                    <div class="flex items-start gap-3">
+                        <i class="fa fa-calendar text-primary mt-1"></i>
+                        <div><p class="text-gray-400 mb-1">举办时间</p><p id="fairTime" class="text-gray-700"></p></div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <i class="fa fa-map-marker text-primary mt-1"></i>
+                        <div><p class="text-gray-400 mb-1">举办地点</p><p id="fairAddress" class="text-gray-700"></p></div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <i class="fa fa-university text-primary mt-1"></i>
+                        <div><p class="text-gray-400 mb-1">举办单位</p><p id="fairOrganizer" class="text-gray-700"></p></div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <i class="fa fa-building text-primary mt-1"></i>
+                        <div><p class="text-gray-400 mb-1">参会企业</p><p id="fairCompanyCount" class="text-gray-700"></p></div>
+                    </div>
+                </div>
+                <div id="fairNoticeWrap" class="hidden mt-6 rounded-lg bg-blue-50 p-4 text-sm">
+                    <p class="font-medium text-neutral mb-1"><i class="fa fa-info-circle text-primary mr-2"></i>参会须知</p>
+                    <p id="fairNotice" class="text-gray-600 leading-relaxed"></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <main class="container mx-auto px-4 py-10">
+        <section class="bg-white rounded-xl p-5 md:p-6 shadow-sm mb-10">
+            <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                <div>
+                    <h2 class="text-lg font-bold text-neutral mb-1">本场招聘会资料下载</h2>
+                    <p class="text-sm text-gray-500">下载本场招聘岗位相关的招聘简章及附件</p>
+                </div>
+                <span id="attachmentCount" class="text-sm text-gray-400 shrink-0"></span>
+            </div>
+            <div id="fairAttachments" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-5"></div>
+            <p id="noAttachments" class="hidden text-sm text-gray-400 mt-5">暂无可下载附件</p>
+        </section>
+
+        <section>
+            <div class="flex flex-wrap justify-between items-end gap-3 mb-6">
+                <div>
+                    <h2 class="text-xl font-bold text-neutral">本场招聘岗位</h2>
+                    <p id="jobCount" class="text-sm text-gray-500 mt-1"></p>
+                </div>
+                <p class="text-xs text-gray-400">岗位名额按学历分别统计</p>
+            </div>
+            <div id="jobList" class="grid md:grid-cols-2 gap-5"></div>
+            <div id="jobEmpty" class="hidden text-center text-gray-400 py-12">本场招聘会暂未发布岗位</div>
+            <div id="jobPagination" class="flex justify-center items-center gap-2 flex-wrap mt-8">
+                <button type="button" class="page-item" data-page="prev" aria-label="上一页">
+                    <i class="fa fa-angle-left"></i>
+                </button>
+                <div id="jobPageNumbers" class="flex items-center gap-2"></div>
+                <button type="button" class="page-item" data-page="next" aria-label="下一页">
+                    <i class="fa fa-angle-right"></i>
+                </button>
+                <div id="jobTotal" class="ml-4 text-sm text-gray-500">共0条岗位</div>
+            </div>
+        </section>
+        <div id="loadError" class="hidden text-center text-red-500 py-12" role="alert">
+            招聘会详情加载失败，请从招聘会列表重新进入或刷新页面重试
+        </div>
+    </main>
+
+    <footer class="bg-neutral text-white py-10 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <i class="fa fa-briefcase text-primary text-2xl"></i>
+                        <span class="text-xl font-bold">算力引擎</span>
+                    </div>
+                    <p class="text-gray-400 text-sm">优聘人才，专注本地求职招聘服务，连接企业与人才，助力高效就业。</p>
+                </div>
+                <div>
+                    <h5 class="font-medium mb-4">求职者</h5>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="#">搜索职位</a></li>
+                        <li><a href="#">简历管理</a></li>
+                        <li><a href="#">求职指南</a></li>
+                        <li><a href="#">防骗提醒</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-medium mb-4">企业服务</h5>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="#">企业入驻</a></li>
+                        <li><a href="#">发布岗位</a></li>
+                        <li><a href="#">人才搜索</a></li>
+                        <li><a href="#">收费套餐</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-medium mb-4">联系我们</h5>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><i class="fa fa-phone mr-2"></i>0791-88XXXXXX</li>
+                        <li><i class="fa fa-envelope mr-2"></i>contact@youpin-job.com</li>
+                        <li><i class="fa fa-map-marker mr-2"></i>南昌市红谷滩新区</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-500 text-sm">
+                © 2026 江西慧点奇丰科技有限公司 版权所有 | 赣ICP备XXXXXXXX号
+                <span class="mx-2">|</span>
+                <a href="#">隐私政策</a>
+                <span class="mx-2">|</span>
+                <a href="#">用户协议</a>
+                <span class="mx-2">|</span>
+                <a href="#">免责声明</a>
+            </div>
+        </div>
+    </footer>
+
+    <div id="jobDetailModal" class="modal-bg hidden" role="dialog" aria-modal="true" aria-labelledby="modalJobTitle">
+        <div class="modal-box p-6">
+            <div class="flex justify-between items-center border-b pb-4 mb-4">
+                <div>
+                    <h2 id="modalJobTitle" class="text-xl font-bold text-neutral">岗位详情</h2>
+                    <p id="modalJobSalary" class="text-secondary font-bold text-lg"></p>
+                </div>
+                <button type="button" class="close-modal text-gray-400 text-xl" aria-label="关闭详情">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div class="flex gap-2 flex-wrap">
+                    <span id="modalCity" class="bg-gray-100 px-3 py-1 rounded text-sm"></span>
+                    <span id="modalExp" class="bg-gray-100 px-3 py-1 rounded text-sm"></span>
+                    <span id="modalEdu" class="bg-gray-100 px-3 py-1 rounded text-sm"></span>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-2">招聘名额</h3>
+                    <div id="modalQuota" class="flex flex-wrap gap-2"></div>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-2">公司信息</h3>
+                    <p id="modalCompany" class="text-gray-600"></p>
+                    <p id="modalCompanyInfo" class="text-gray-500 text-sm mt-1"></p>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-2">岗位职责</h3>
+                    <p id="modalJobDescription" class="text-gray-600 text-sm leading-relaxed whitespace-pre-line"></p>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-2">任职要求</h3>
+                    <p id="modalJobRequirement" class="text-gray-600 text-sm leading-relaxed whitespace-pre-line"></p>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-2">福利待遇</h3>
+                    <p id="modalJobBenefits" class="text-gray-600 text-sm leading-relaxed whitespace-pre-line"></p>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-2">联系方式</h3>
+                    <p id="modalJobContact" class="text-gray-600 text-sm leading-relaxed whitespace-pre-line"></p>
+                </div>
+            </div>
+            <div class="mt-6 pt-4 border-t flex justify-end">
+                <button type="button" class="btn-primary open-apply-modal">投递简历</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const pageSize = 10;
+        const statusMap = {
+            upcoming: { text: '即将开始', className: 'bg-blue-100 text-blue-700' },
+            ongoing: { text: '正在进行', className: 'bg-green-100 text-green-700' },
+            ended: { text: '已结束', className: 'bg-gray-100 text-gray-500' },
+        };
+        const quotaTypes = [
+            { key: 'juniorCollege', label: '专科' },
+            { key: 'bachelor', label: '本科' },
+            { key: 'postgraduate', label: '研究生' },
+        ];
+        const jobList = document.getElementById('jobList');
+        const attachmentList = document.getElementById('fairAttachments');
+        const jobDetailModal = document.getElementById('jobDetailModal');
+        const jobPagination = document.getElementById('jobPagination');
+        const jobPageNumbers = document.getElementById('jobPageNumbers');
+        let currentPage = 1;
+        let fairJobs = [];
+        let currentFair;
+
+        function createElement(tag, className, text) {
+            const element = document.createElement(tag);
+            element.className = className;
+            if (text !== undefined) element.textContent = text;
+            return element;
+        }
+
+        function getQuota(job) {
+            const quota = job.recruitmentQuota || {};
+            return quotaTypes.map(type => ({
+                ...type,
+                count: Number.isFinite(Number(quota[type.key])) ? Math.max(0, Number(quota[type.key])) : 0,
+            }));
+        }
+
+        function createQuotaBadges(job, compact = false) {
+            const container = createElement('div', 'flex flex-wrap gap-2');
+            getQuota(job).forEach(({ label, count }) => {
+                container.appendChild(createElement(
+                    'span',
+                    compact
+                        ? 'inline-flex items-center gap-1 rounded bg-blue-50 px-2 py-1 text-xs text-blue-700'
+                        : 'inline-flex items-center gap-1 rounded-lg bg-blue-50 px-3 py-2 text-sm text-blue-700',
+                    `${label} ${count}名`
+                ));
+            });
+            return container;
+        }
+
+        function setText(id, value, fallback = '暂无信息') {
+            document.getElementById(id).textContent = value || fallback;
+        }
+
+        function renderFair(fair) {
+            const status = statusMap[fair.status] || { text: '状态待更新', className: 'bg-gray-100 text-gray-500' };
+            const statusElement = document.getElementById('fairStatus');
+            statusElement.textContent = status.text;
+            statusElement.className = `text-xs px-3 py-1 rounded-full ${status.className}`;
+            document.title = `${fair.title || '招聘会详情'} - 算力引擎`;
+            setText('fairCity', fair.city, '');
+            setText('fairTitle', fair.title, '招聘会详情');
+            setText('fairDescription', fair.desc, '');
+            setText('fairTime', `${fair.startTime || '时间待定'}${fair.endTime ? ` 至 ${fair.endTime}` : ''}`);
+            setText('fairAddress', fair.address || fair.city);
+            setText('fairOrganizer', fair.organizer);
+            setText('fairCompanyCount', `${fair.companyCount ?? 0}家`);
+
+            if (fair.notice) {
+                setText('fairNotice', fair.notice);
+                document.getElementById('fairNoticeWrap').classList.remove('hidden');
+            }
+
+            renderAttachments(fair.attachments || []);
+            renderJobs(fair.jobs || []);
+        }
+
+        function renderAttachments(attachments) {
+            const uniqueAttachments = [...new Map(
+                attachments.filter(item => item && item.url).map(item => [item.url, item])
+            ).values()];
+            document.getElementById('attachmentCount').textContent = `共${uniqueAttachments.length}份资料`;
+            attachmentList.innerHTML = '';
+            document.getElementById('noAttachments').classList.toggle('hidden', uniqueAttachments.length > 0);
+
+            uniqueAttachments.forEach(attachment => {
+                const link = document.createElement('a');
+                link.href = attachment.url;
+                link.download = attachment.name || '';
+                link.className = 'flex items-center gap-3 rounded-lg border border-gray-100 p-3 hover:border-primary hover:bg-blue-50/40 transition';
+                const icon = createElement('i', 'fa fa-file-o text-primary text-xl');
+                icon.setAttribute('aria-hidden', 'true');
+                const details = createElement('span', 'min-w-0 flex-1');
+                details.appendChild(createElement('span', 'block truncate text-sm font-medium text-gray-700', attachment.name || '招聘会附件'));
+                details.appendChild(createElement('span', 'block text-xs text-gray-400 mt-1', '点击下载'));
+                const downloadIcon = createElement('i', 'fa fa-download text-gray-400');
+                downloadIcon.setAttribute('aria-hidden', 'true');
+                link.append(icon, details, downloadIcon);
+                attachmentList.appendChild(link);
+            });
+        }
+
+        function createJobCard(job) {
+            const card = createElement('article', 'bg-white rounded-xl p-5 job-card-hover');
+            const heading = createElement('div', 'flex justify-between items-start gap-3 mb-2');
+            heading.appendChild(createElement('h3', 'font-semibold text-lg text-neutral', job.title || '未命名岗位'));
+            heading.appendChild(createElement('span', 'text-secondary font-bold shrink-0', job.salary || '薪资面议'));
+            card.appendChild(heading);
+
+            card.appendChild(createElement('p', 'text-gray-500 text-sm mb-3', job.company || '公司信息待更新'));
+            const tags = createElement('div', 'flex gap-2 mb-4 flex-wrap');
+            [job.city, job.exp, job.edu].filter(Boolean).forEach(tag => {
+                tags.appendChild(createElement('span', 'bg-gray-100 text-xs px-2 py-1 rounded', tag));
+            });
+            card.appendChild(tags);
+
+            const quotaSection = createElement('div', 'rounded-lg bg-gray-50 p-3 mb-4');
+            quotaSection.appendChild(createElement('p', 'text-xs text-gray-500 mb-2', '招聘名额'));
+            quotaSection.appendChild(createQuotaBadges(job, true));
+            card.appendChild(quotaSection);
+
+            card.appendChild(createElement('p', 'text-gray-400 text-sm leading-relaxed line-clamp-2', job.description || '岗位职责待更新'));
+            const footer = createElement('div', 'mt-4 pt-4 border-t border-gray-100 flex justify-between items-center');
+            footer.appendChild(createElement('span', 'text-xs text-gray-400', job.published || '招聘中'));
+            const detailButton = createElement('button', 'text-primary text-sm hover:text-blue-700');
+            detailButton.type = 'button';
+            detailButton.dataset.jobId = String(job.id);
+            detailButton.classList.add('open-detail');
+            detailButton.textContent = '查看岗位详情';
+            footer.appendChild(detailButton);
+            card.appendChild(footer);
+            return card;
+        }
+
+        function renderJobs(jobs) {
+            fairJobs = jobs.filter(job => job && job.id !== undefined);
+            currentPage = 1;
+            renderJobPage();
+        }
+
+        function renderJobPagination() {
+            const totalPages = Math.max(1, Math.ceil(fairJobs.length / pageSize));
+            currentPage = Math.min(currentPage, totalPages);
+            jobPageNumbers.innerHTML = '';
+
+            const visiblePageCount = 5;
+            const pageStart = totalPages <= visiblePageCount
+                ? 1
+                : Math.min(Math.max(1, currentPage - 2), totalPages - visiblePageCount + 1);
+            const pageEnd = Math.min(totalPages, pageStart + visiblePageCount - 1);
+
+            if (pageStart > 1) jobPageNumbers.appendChild(createElement('span', 'px-1 text-gray-400', '…'));
+            for (let page = pageStart; page <= pageEnd; page += 1) {
+                const pageButton = document.createElement('button');
+                pageButton.type = 'button';
+                pageButton.className = `page-item${page === currentPage ? ' page-active' : ''}`;
+                pageButton.dataset.page = String(page);
+                pageButton.textContent = String(page);
+                pageButton.setAttribute('aria-label', `第${page}页`);
+                pageButton.setAttribute('aria-current', page === currentPage ? 'page' : 'false');
+                jobPageNumbers.appendChild(pageButton);
+            }
+            if (pageEnd < totalPages) jobPageNumbers.appendChild(createElement('span', 'px-1 text-gray-400', '…'));
+
+            const previousButton = jobPagination.querySelector('[data-page="prev"]');
+            const nextButton = jobPagination.querySelector('[data-page="next"]');
+            previousButton.disabled = currentPage === 1;
+            nextButton.disabled = currentPage === totalPages;
+            previousButton.classList.toggle('opacity-40', currentPage === 1);
+            nextButton.classList.toggle('opacity-40', currentPage === totalPages);
+            jobPagination.classList.toggle('hidden', fairJobs.length === 0);
+            document.getElementById('jobTotal').textContent = `共${fairJobs.length}条岗位`;
+        }
+
+        function renderJobPage() {
+            jobList.innerHTML = '';
+            document.getElementById('jobCount').textContent = `共${fairJobs.length}个岗位`;
+            document.getElementById('jobEmpty').classList.toggle('hidden', fairJobs.length > 0);
+            renderJobPagination();
+
+            const startIndex = (currentPage - 1) * pageSize;
+            fairJobs.slice(startIndex, startIndex + pageSize).forEach(job => {
+                jobList.appendChild(createJobCard(job));
+            });
+        }
+
+        jobPagination.addEventListener('click', event => {
+            const button = event.target.closest('button[data-page]');
+            if (!button || button.disabled) return;
+
+            const totalPages = Math.max(1, Math.ceil(fairJobs.length / pageSize));
+            if (button.dataset.page === 'prev') currentPage = Math.max(1, currentPage - 1);
+            else if (button.dataset.page === 'next') currentPage = Math.min(totalPages, currentPage + 1);
+            else currentPage = Math.min(totalPages, Number(button.dataset.page));
+            renderJobPage();
+        });
+
+        function openJobDetail(job) {
+            setText('modalJobTitle', job.title);
+            setText('modalJobSalary', job.salary);
+            setText('modalCompany', job.company);
+            setText('modalCompanyInfo', [job.industryType, job.companySize, job.enterpriseType]
+                .filter(Boolean).join(' | '));
+            setText('modalCity', job.city);
+            setText('modalExp', job.exp);
+            setText('modalEdu', job.edu);
+            setText('modalJobDescription', job.description);
+            setText('modalJobRequirement', job.requirement);
+            setText('modalJobBenefits', job.benefits);
+            setText('modalJobContact', job.contact);
+            const modalQuota = document.getElementById('modalQuota');
+            modalQuota.innerHTML = '';
+            modalQuota.appendChild(createQuotaBadges(job));
+            jobDetailModal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+            document.querySelector('.close-modal').focus();
+        }
+
+        jobList.addEventListener('click', event => {
+            const button = event.target.closest('.open-detail');
+            if (!button || !currentFair) return;
+            const job = currentFair.jobs.find(item => String(item.id) === button.dataset.jobId);
+            if (job) openJobDetail(job);
+        });
+
+        function closeJobDetail() {
+            jobDetailModal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+
+        document.querySelector('.close-modal').addEventListener('click', closeJobDetail);
+        jobDetailModal.addEventListener('click', event => {
+            if (event.target === jobDetailModal) closeJobDetail();
+        });
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && !jobDetailModal.classList.contains('hidden')) closeJobDetail();
+        });
+        document.querySelector('.open-apply-modal').addEventListener('click', () => {
+            alert('该功能暂未开放');
+        });
+        document.querySelectorAll('.login-coming-soon').forEach(button => {
+            button.addEventListener('click', () => alert('该功能暂未开放'));
+        });
+
+        async function loadFairDetail() {
+            const id = new URLSearchParams(window.location.search).get('id');
+            if (!id) {
+                document.getElementById('loadError').classList.remove('hidden');
+                return;
+            }
+            try {
+                const response = await fetch('./fair%E2%80%91list.json');
+                if (!response.ok) throw new Error(`招聘会数据加载失败：HTTP ${response.status}`);
+                const data = await response.json();
+                if (!Array.isArray(data)) throw new Error('招聘会数据格式错误：预期为数组');
+                currentFair = data.find(fair => String(fair.id) === id);
+                if (!currentFair) throw new Error(`未找到编号为 ${id} 的招聘会`);
+                renderFair(currentFair);
+            } catch (error) {
+                console.error(error);
+                document.getElementById('loadError').classList.remove('hidden');
+            }
+        }
+
+        loadFairDetail();
+    </script>
+</body>
+
+</html>
