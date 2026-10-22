@@ -402,7 +402,7 @@
                 : Math.min(Math.max(1, currentPage - 2), totalPages - visiblePageCount + 1);
             const pageEnd = Math.min(totalPages, pageStart + visiblePageCount - 1);
 
-            if (pageStart > 1) jobPageNumbers.appendChild(createElement('span', 'px-1 text-gray-400', '…'));
+            if (pageStart > 1) jobPageNumbers.appendChild(createElement('span', 'px-1 text-gray-400'));
             for (let page = pageStart; page <= pageEnd; page += 1) {
                 const pageButton = document.createElement('button');
                 pageButton.type = 'button';
@@ -413,7 +413,7 @@
                 pageButton.setAttribute('aria-current', page === currentPage ? 'page' : 'false');
                 jobPageNumbers.appendChild(pageButton);
             }
-            if (pageEnd < totalPages) jobPageNumbers.appendChild(createElement('span', 'px-1 text-gray-400', '…'));
+            if (pageEnd < totalPages) jobPageNumbers.appendChild(createElement('span', 'px-1 text-gray-400'));
 
             const previousButton = jobPagination.querySelector('[data-page="prev"]');
             const nextButton = jobPagination.querySelector('[data-page="next"]');
